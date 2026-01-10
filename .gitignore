@@ -13,3 +13,12 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Google Services & Keys (Sensitive)
+google-services.json
+key.properties
+*.jks
+*.keystore
+
+# Build Folder
+app/build/
