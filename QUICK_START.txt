@@ -1,0 +1,95 @@
+```
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║   🚨  GOOGLE SIGN-IN SETUP REQUIRED  🚨                      ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+MASALAH: Google Sign-In gagal setelah pilih akun (Error Code 12500)
+
+PENYEBAB: SHA-1 fingerprint belum didaftarkan di Firebase Console
+
+⚠️  OAUTH_CLIENT MASIH KOSONG DI google-services.json!
+
+═══════════════════════════════════════════════════════════════
+
+🎯 SOLUSI CEPAT (5 Menit Setup):
+
+1. Buka Firebase Console:
+   → https://console.firebase.google.com/
+
+2. Pilih Project: sign-in-995b2
+
+3. Project Settings → General → Your apps → Android app
+
+4. KLIK "Add fingerprint" dan paste SHA-1 ini:
+
+   🔐 SHA-1 Fingerprint:
+   89:D7:9E:42:B8:B9:40:57:58:37:5A:34:B0:D3:72:CD:31:97:B0:49
+
+5. SAVE → Download ulang google-services.json
+
+6. Replace file di app/google-services.json
+
+7. Rebuild app:
+   ./gradlew clean assembleDebug
+
+8. Install & Test!
+
+═══════════════════════════════════════════════════════════════
+
+✅ FLOW LOGIN/REGISTER SUDAH DIPERBAIKI!
+
+Login dengan Google
+  ↓
+Cek Database: User sudah terdaftar?
+  ├─ SUDAH → Langsung ke Dashboard ✅
+  └─ BELUM → Ke Register Screen
+       ↓
+     Isi Nama & Foto (optional)
+       ↓
+     Complete Registration
+       ↓
+     Auto Navigate ke Dashboard ✅
+
+═══════════════════════════════════════════════════════════════
+
+📚 DOKUMENTASI LENGKAP:
+
+- CHANGELOG_LOGIN_REGISTER.md     → Flow login/register yang baru
+- GOOGLE_SIGNIN_SETUP.md          → Step by step Firebase setup
+- TROUBLESHOOTING_GOOGLE_SIGNIN.md → Error codes & solutions
+
+═══════════════════════════════════════════════════════════════
+
+🔧 FITUR BARU:
+
+✅ Auto-check database sebelum navigate
+✅ Skip register jika sudah pernah login
+✅ Email verification message di Register screen
+✅ Welcome back message untuk returning users
+✅ Auto navigate ke Dashboard setelah register
+
+═══════════════════════════════════════════════════════════════
+
+⚡ QUICK COPY:
+
+Package Name:
+com.example.komikita
+
+SHA-1:
+89:D7:9E:42:B8:B9:40:57:58:37:5A:34:B0:D3:72:CD:31:97:B0:49
+
+Firebase Console:
+https://console.firebase.google.com/
+
+Project ID:
+sign-in-995b2
+
+═══════════════════════════════════════════════════════════════
+
+⚠️  TANPA ADD SHA-1, GOOGLE SIGN-IN TIDAK AKAN BERFUNGSI!
+    oauth_client HARUS terisi setelah add SHA-1!
+
+═══════════════════════════════════════════════════════════════
+```
