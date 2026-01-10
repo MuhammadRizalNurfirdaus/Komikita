@@ -31,6 +31,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAllChapters"
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="400dp"
+        android:theme="@style/ThemeOverlay.Material3.Dark" />
 
 </LinearLayout>
