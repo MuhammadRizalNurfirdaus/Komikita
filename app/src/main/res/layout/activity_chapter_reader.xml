@@ -47,8 +47,21 @@
                 android:textColor="@color/white"
                 app:strokeColor="#FF6B35" />
 
+
             <Space
-                android:layout_width="16dp"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="@color/white" />
+
+            <Space
+                android:layout_width="8dp"
                 android:layout_height="wrap_content" />
 
             <Button
@@ -68,10 +81,10 @@
     <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_gravity="center"
-        android:indeterminateTint="#FF6B35" />
+        android:indeterminateDrawable="@drawable/progress_custom" />
 
     <!-- Download FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -86,5 +99,9 @@
         android:src="@android:drawable/stat_sys_download"
         app:tint="@color/white"
         app:backgroundTint="#FF6B35" />
+
+    <include 
+        android:id="@+id/layoutNoInternet"
+        layout="@layout/layout_no_internet" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

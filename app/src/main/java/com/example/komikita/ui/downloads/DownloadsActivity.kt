@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.komikita.data.local.AppDatabase
 import com.example.komikita.data.local.entity.DownloadEntity
+import com.example.komikita.R
 import com.example.komikita.databinding.ActivityDownloadsBinding
 import com.example.komikita.ui.adapter.DownloadAdapter
 import com.example.komikita.ui.auth.LoginActivity
@@ -33,6 +34,7 @@ class DownloadsActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         
         setupToolbar()
+        setupBottomNavigation()
         setupRecyclerView()
         setupEmptyState()
         loadDownloads()
@@ -40,11 +42,45 @@ class DownloadsActivity : AppCompatActivity() {
     
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.selectedItemId = R.id.nav_downloads
+
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this@DownloadsActivity, com.example.komikita.ui.dashboard.DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_search -> {
+                    val intent = Intent(this@DownloadsActivity, com.example.komikita.ui.search.SearchActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_favorites -> {
+                    val intent = Intent(this@DownloadsActivity, com.example.komikita.ui.favorites.FavoritesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_downloads -> true
+                R.id.nav_profile -> {
+                    val intent = Intent(this@DownloadsActivity, com.example.komikita.ui.profile.ProfileActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                else -> false
+            }
         }
     }
     
@@ -135,6 +171,7 @@ class DownloadsActivity : AppCompatActivity() {
     
     override fun onResume() {
         super.onResume()
+        binding.bottomNavigation.selectedItemId = R.id.nav_downloads
         if (sessionManager.isLoggedIn()) {
             loadDownloads()
         }

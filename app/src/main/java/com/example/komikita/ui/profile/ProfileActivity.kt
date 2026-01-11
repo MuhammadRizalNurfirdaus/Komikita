@@ -1,5 +1,6 @@
 package com.example.komikita.ui.profile
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -13,6 +14,7 @@ import com.example.komikita.databinding.ActivityProfileBinding
 import com.example.komikita.data.local.AppDatabase
 import com.example.komikita.ui.auth.LoginActivity
 import com.example.komikita.util.SessionManager
+import com.example.komikita.R 
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -36,20 +38,17 @@ class ProfileActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         configureGoogleSignIn()
         
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
-        }
+        setupToolbar()
         
         loadUserData()
-        setupDarkModeToggle()
+        setupDarkMode()
         setupListeners()
+        setupBottomNavigation()
     }
     
     override fun onResume() {
         super.onResume()
+        binding.bottomNavigation.selectedItemId = R.id.nav_profile
         loadUserData()
     }
     
@@ -100,34 +99,111 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
     
-    private fun setupDarkModeToggle() {
-        val isDarkMode = sharedPreferences.getBoolean("dark_mode", false)
-        binding.switchDarkMode.isChecked = isDarkMode
+    private fun setupDarkMode() {
+        val sharedPreferences = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         
-        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean("dark_mode", isChecked).apply()
+        if (!sharedPreferences.contains("dark_mode")) {
+            // First time launch or preference not set, check system
+            val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+            val isSystemDark = currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
             
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            // Save system preference as default
+            sharedPreferences.edit().putBoolean("dark_mode", isSystemDark).apply()
+            
+            // Apply it
+            val mode = if (isSystemDark) {
+                AppCompatDelegate.MODE_NIGHT_YES
             } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                AppCompatDelegate.MODE_NIGHT_NO
             }
+            AppCompatDelegate.setDefaultNightMode(mode)
+            binding.switchDarkMode.isChecked = isSystemDark
+        } else {
+            // Use existing preference
+            val isDarkMode = sharedPreferences.getBoolean("dark_mode", false)
+            binding.switchDarkMode.isChecked = isDarkMode
         }
     }
     
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
+    private fun setDarkMode(isDarkMode: Boolean) {
+        val sharedPreferences = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean("dark_mode", isDarkMode).apply()
+        
+        val mode = if (isDarkMode) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+        
+        AppCompatDelegate.setDefaultNightMode(mode)
+        
+        // Recreate to apply theme needs to be handled carefully or just let the delegate handle it
+        // Usually setDefaultNightMode causes recreation automatically for visible activities
+    }
+    
     private fun setupListeners() {
+        // Back listener removed
+        
         binding.btnEditProfile.setOnClickListener {
-            startActivity(Intent(this, EditProfileActivity::class.java))
+            startActivity(Intent(this, com.example.komikita.ui.profile.EditProfileActivity::class.java))
         }
         
         if (sessionManager.isLoggedIn()) {
             binding.btnLogout.setOnClickListener {
-                performLogout()
+                logout()
+            }
+        }
+
+        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            setDarkMode(isChecked)
+        }
+    }
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.selectedItemId = R.id.nav_profile
+
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this@ProfileActivity, com.example.komikita.ui.dashboard.DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_search -> {
+                    val intent = Intent(this@ProfileActivity, com.example.komikita.ui.search.SearchActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_favorites -> {
+                    val intent = Intent(this@ProfileActivity, com.example.komikita.ui.favorites.FavoritesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_downloads -> {
+                    val intent = Intent(this@ProfileActivity, com.example.komikita.ui.downloads.DownloadsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_profile -> true
+                else -> false
             }
         }
     }
     
-    private fun performLogout() {
+    private fun logout() { // Renamed from performLogout
         val loginType = sessionManager.getLoginType()
         
         // Sign out from Google if it was Google login

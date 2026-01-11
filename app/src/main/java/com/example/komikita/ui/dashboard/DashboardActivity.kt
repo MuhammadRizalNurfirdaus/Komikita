@@ -36,7 +36,18 @@ class DashboardActivity : AppCompatActivity() {
         repository = KomikRepository()
         setupRecyclerView()
         setupBottomNavigation()
+        setupToolbar()
         loadComics()
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = R.id.nav_home
+    }
+    
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
     
     private fun setupRecyclerView() {
@@ -51,26 +62,37 @@ class DashboardActivity : AppCompatActivity() {
     }
     
     private fun setupBottomNavigation() {
+        binding.bottomNavigation.selectedItemId = R.id.nav_home
+
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
-                    // Already on home
-                    true
-                }
+                R.id.nav_home -> true
                 R.id.nav_search -> {
-                    startActivity(Intent(this, SearchActivity::class.java))
+                    val intent = Intent(this@DashboardActivity, SearchActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_favorites -> {
-                    startActivity(Intent(this, FavoritesActivity::class.java))
+                    val intent = Intent(this@DashboardActivity, FavoritesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_downloads -> {
-                    startActivity(Intent(this, DownloadsActivity::class.java))
+                    val intent = Intent(this@DashboardActivity, DownloadsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
+                    val intent = Intent(this@DashboardActivity, ProfileActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
                     true
                 }
                 else -> false

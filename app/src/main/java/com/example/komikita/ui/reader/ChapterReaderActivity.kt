@@ -164,6 +164,7 @@ class ChapterReaderActivity : AppCompatActivity() {
         
         // Reset state
         binding.progressBar.visibility = View.VISIBLE
+        binding.layoutNoInternet.root.visibility = View.GONE // Hide no internet layout
         updateNavigationButtons(false, false)
         
         // Scroll to top
@@ -173,35 +174,41 @@ class ChapterReaderActivity : AppCompatActivity() {
         checkDownloadStatus()
         
         lifecycleScope.launch(Dispatchers.IO) {
-            val result = repository.getChapter(newChapterId)
-            
-            withContext(Dispatchers.Main) {
-                binding.progressBar.visibility = View.GONE
+            try {
+                val result = repository.getChapter(newChapterId)
                 
-                result.onSuccess { response ->
-                    response.data?.let { chapterData ->
-                        chapterTitle = chapterData.title ?: "Chapter"
-                        binding.toolbar.subtitle = chapterTitle
-                        
-                        chapterData.images?.let { images: List<String> ->
-                            imageUrls = images
-                            adapter.submitList(images)
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    
+                    result.onSuccess { response ->
+                        response.data?.let { chapterData ->
+                            chapterTitle = chapterData.title ?: "Chapter"
+                            binding.toolbar.subtitle = chapterTitle
+                            
+                            chapterData.images?.let { images: List<String> ->
+                                imageUrls = images
+                                adapter.submitList(images)
+                            }
+                            
+                            // Handle navigation
+                            nextChapterId = chapterData.nextChapterId
+                            prevChapterId = chapterData.prevChapterId
+                            
+                            // Enable/Disable buttons based on ID availability
+                            val hasNext = !nextChapterId.isNullOrEmpty() && nextChapterId != "null"
+                            val hasPrev = !prevChapterId.isNullOrEmpty() && prevChapterId != "null"
+                            
+                            updateNavigationButtons(hasPrev, hasNext)
                         }
-                        
-                        // Handle navigation
-                        nextChapterId = chapterData.nextChapterId
-                        prevChapterId = chapterData.prevChapterId
-                        
-                        // Enable/Disable buttons based on ID availability
-                        // Note: API might return empty string or "null" string
-                        val hasNext = !nextChapterId.isNullOrEmpty() && nextChapterId != "null"
-                        val hasPrev = !prevChapterId.isNullOrEmpty() && prevChapterId != "null"
-                        
-                        updateNavigationButtons(hasPrev, hasNext)
+                    }.onFailure {
+                        Toast.makeText(this@ChapterReaderActivity, "Failed to load chapter", Toast.LENGTH_SHORT).show()
                     }
-                }.onFailure {
-                    Toast.makeText(this@ChapterReaderActivity, "Failed to load chapter", Toast.LENGTH_SHORT).show()
-                    // Don't finish(), allow retry or picking another chapter via list
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    binding.layoutNoInternet.root.visibility = View.VISIBLE
+                    Toast.makeText(this@ChapterReaderActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

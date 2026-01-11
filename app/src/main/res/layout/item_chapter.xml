@@ -21,6 +21,6 @@
         android:layout_height="wrap_content"
         android:text="2 days ago"
         android:textSize="12sp"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        android:textColor="?attr/colorOnSurface" />
 
 </LinearLayout>

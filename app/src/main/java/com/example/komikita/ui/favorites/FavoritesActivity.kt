@@ -14,6 +14,7 @@ import com.example.komikita.ui.adapter.FavoriteAdapter
 import com.example.komikita.ui.auth.LoginActivity
 import com.example.komikita.ui.detail.KomikDetailActivity
 import com.example.komikita.util.SessionManager
+import com.example.komikita.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ class FavoritesActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         
         setupToolbar()
+        setupBottomNavigation()
         setupRecyclerView()
         setupEmptyState()
         loadFavorites()
@@ -40,11 +42,45 @@ class FavoritesActivity : AppCompatActivity() {
     
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.selectedItemId = R.id.nav_favorites
+
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this@FavoritesActivity, com.example.komikita.ui.dashboard.DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_search -> {
+                    val intent = Intent(this@FavoritesActivity, com.example.komikita.ui.search.SearchActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_favorites -> true
+                R.id.nav_downloads -> {
+                    val intent = Intent(this@FavoritesActivity, com.example.komikita.ui.downloads.DownloadsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_profile -> {
+                    val intent = Intent(this@FavoritesActivity, com.example.komikita.ui.profile.ProfileActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                else -> false
+            }
         }
     }
     
@@ -128,6 +164,7 @@ class FavoritesActivity : AppCompatActivity() {
     
     override fun onResume() {
         super.onResume()
+        binding.bottomNavigation.selectedItemId = R.id.nav_favorites
         // Reload when coming back from detail
         if (sessionManager.isLoggedIn()) {
             loadFavorites()

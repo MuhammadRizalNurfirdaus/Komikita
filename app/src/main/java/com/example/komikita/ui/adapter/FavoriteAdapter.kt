@@ -40,7 +40,8 @@ class FavoriteAdapter(
 
             Glide.with(itemView.context)
                 .load(favorite.poster)
-                .placeholder(R.drawable.ic_launcher_foreground)
+                .placeholder(R.drawable.logokomik)
+                .error(R.drawable.logokomik)
                 .into(ivPoster)
 
             itemView.setOnClickListener {

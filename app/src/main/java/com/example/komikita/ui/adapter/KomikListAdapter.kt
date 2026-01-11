@@ -39,7 +39,8 @@ class KomikListAdapter(
             
             Glide.with(binding.ivPoster.context)
                 .load(item.poster)
-                .placeholder(R.drawable.ic_launcher_foreground)
+                .placeholder(R.drawable.logokomik)
+                .error(R.drawable.logokomik)
                 .into(binding.ivPoster)
             
             binding.root.setOnClickListener {

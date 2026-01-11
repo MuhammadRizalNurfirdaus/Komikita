@@ -13,6 +13,7 @@ import com.example.komikita.data.repository.KomikRepository
 import com.example.komikita.ui.adapter.KomikAdapter
 import com.example.komikita.ui.adapter.KomikListAdapter
 import com.example.komikita.ui.detail.KomikDetailActivity
+import com.example.komikita.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,14 +40,59 @@ class SearchActivity : AppCompatActivity() {
         setupSearchField()
         setupCategoryChips()
         setupGenreChips()
+        setupBottomNavigation()
         
+        // Load initial data (manga)
         // Load initial data (manga)
         loadByCategory()
     }
     
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = R.id.nav_search
+    }
+    
     private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.selectedItemId = R.id.nav_search
+
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this@SearchActivity, com.example.komikita.ui.dashboard.DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_search -> true
+                R.id.nav_favorites -> {
+                    val intent = Intent(this@SearchActivity, com.example.komikita.ui.favorites.FavoritesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_downloads -> {
+                    val intent = Intent(this@SearchActivity, com.example.komikita.ui.downloads.DownloadsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.nav_profile -> {
+                    val intent = Intent(this@SearchActivity, com.example.komikita.ui.profile.ProfileActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                else -> false
+            }
         }
     }
     
