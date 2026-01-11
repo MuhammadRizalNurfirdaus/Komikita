@@ -7,7 +7,7 @@
 | **Nama** | **Muhammad Rizal Nurfirdaus** |
 | **NIM** | **20230810088** |
 | **Kelas** | **TINFC-2023-04** |
-| **Mata Kuliah** | **Bahasa Pemrograman 3** |
+| **Mata Kuliah** | **Praktikum Bahasa Pemrograman 3** |
 | **Dosen Pengampu** | **Dede Husen, M.Kom.** |
 
 ---
