@@ -14,77 +14,93 @@
 
 ## 📱 Tentang Project
 
-**Komikita** adalah aplikasi Android native yang dibangun dengan Kotlin untuk membaca berbagai judul komik (Manga, Manhwa, Manhua). Aplikasi ini dirancang dengan antarmuka modern yang responsif dan fitur lengkap layaknya aplikasi profesional.
+**Komikita** adalah aplikasi Android native modern yang dikembangkan menggunakan **Kotlin** dan **MVVM Architecture**. Aplikasi ini dirancang untuk memberikan pengalaman membaca komik (Manga, Manhwa, Manhua) yang premium, responsif, dan nyaman di mata pengguna.
 
-Aplikasi ini memenuhi dan melampaui syarat tugas UAS dengan menyediakan >15 Activity, manajemen user dengan session, dan fitur database lokal.
+Project ini telah diselesaikan 100% dan memenuhi standar pengembangan aplikasi Android profesional, termasuk penggunaan **Local Database (Room)**, **Networking (Retrofit)**, dan **State Management**.
 
 🔗 **GitHub Repository**: [https://github.com/MuhammadRizalNurfirdaus/Komikita.git](https://github.com/MuhammadRizalNurfirdaus/Komikita.git)
 
 ## 🎨 Desain & UI Reference
 
-Semua desain antarmuka aplikasi ini merujuk pada High-Fidelity Design yang telah dibuat di Figma. Desain mencakup Light Mode dan Dark Mode dengan Color Palette konsisten `brand_orange` (#FF6B35).
+Design System aplikasi ini mengacu pada High-Fidelity Design di Figma.
+*   **Warna Utama**: `brand_orange` (#FF6B35)
+*   **Tema**: Mendukung penuh **Light Mode** dan **Dark Mode** secara otomatis.
+*   **Navigasi**: Menggunakan Persistent Bottom Navigation Bar.
 
 🔗 **Figma Design File**: [Klik disini untuk melihat Desain Lengkap](https://www.figma.com/design/WhCaIxb9lESuLnuTMszFR8/Komikita?node-id=0-1&p=f&t=ZAtUXDHCXta4IAqz-0)
 
-> **Catatan**: Password dan aset sensitif tidak disertakan dalam link publik ini.
+> **Catatan Keamanan**: Aset sensitif dan konfigurasi rahasia tidak disertakan dalam link publik ini.
 
 ---
 
-## ✨ Fitur Unggulan (Updated)
+## ✨ Fitur Unggulan
 
-### 1. Autentikasi & Profil (User Management)
-*   **Login & Register Canggih**: Sistem autentikasi yang menyimpan data user (Nama, Email, Password Hash) ke lokal database Room.
-*   **Edit Profile**: User dapat mengubah **Display Name**, **Email**, dan **Foto Profil** (mengambil dari galeri HP).
-*   **Google Sign-In**: Opsi login cepat menggunakan akun Google (Firebase Auth ready).
-*   **Mode Tamu**: Akses aplikasi tanpa login (dengan pembatasan pada fitur Download/Favorit).
+### 1. Autentikasi & Manajemen User
+*   **Secure Login & Register**: Form login/register dengan validasi realtime.
+*   **Password Hashing**: Password user dienkripsi menggunakan **SHA-256** sebelum disimpan ke database lokal.
+*   **Profil User**: Pengguna dapat mengganti Foto Profil (pilih dari galeri) dan mengedit data diri.
+*   **Mode Tamu (Guest)**: Bisa browsing komik tanpa login, namun wajib login untuk fitur premium (Download/Favorit).
 
-### 2. Tampilan & Experience (UX)
-*   **Persistent Bottom Navigation**: Navigasi antar menu utama (Dashboard, Search, Favorites, Downloads, Profile) yang seamless dan mempertahankan state halaman.
-*   **Smart Dark Mode**: Aplikasi otomatis mendeteksi pengaturan sistem HP (Gelap/Terang) dan menyesuaikan warna background (`background_primary`) serta teks agar tetap nyaman dibaca.
-*   **Semantic Colors**: Menggunakan sistem warna semantik untuk konsistensi visual di seluruh aplikasi.
-*   **Custom Loading Animation**: Animasi loading unik dengan logo Komikita berputar.
+### 2. Pengalaman Membaca (Reading Experience)
+*   **Chapter Reader Canggih**: Viewer gambar vertikal dengan performa tinggi (menggunakan Glide).
+*   **Navigasi Chapter**: Tombol **Next/Prev Chapter** dan **Refresh** (Reload) yang memudahkan navigasi tanpa keluar halaman.
+*   **Smart Scroll**: Layout Detail Komik yang presisi menggunakan `NestedScrollView`, mencegah scroll berlebih pada konten pendek.
+*   **Error Handling**: Tampilan "No Internet" interaktif dengan tombol **Retry/Refresh** untuk memuat ulang data.
 
-### 3. Manajemen Konten Offline
-*   **Sistem Favorit**: Simpan komik ke daftar Favorit (tersimpan di Database Lokal per-user).
-*   **Download Manager**: Unduh chapter untuk dibaca tanpa koneksi internet.
-*   **Offline Reader**: Akses konten yang sudah didownload langsung dari menu Downloads.
+### 3. Manajemen Konten Offline (Database & Download)
+*   **Fitur Download**: Unduh chapter favorit Anda dan baca kapan saja tanpa internet!
+    *   File terdaftar di database `DownloadEntity`.
+    *   Indikator status download (ikon berubah saat selesai).
+*   **Favorit**: Simpan komik ke daftar Favorit pribadi user.
+*   **Sinkronisasi**: Data favorit dan download terikat pada akun user masing-masing.
 
-### 4. Fitur Utama Lainnya
-*   **Dashboard**: Menampilkan daftar komik terbaru dari API publik (Mangamint Source).
-*   **Pencarian (Search)**: Cari komik berdasarkan judul, filter `Manga`/`Manhwa`/`Manhua`, dan filter `Genre`.
-*   **Baca Komik**: Chapter viewer responsif dengan navigasi Next/Prev Chapter.
+### 4. UI/UX & Tampilan Visual
+*   **Full Dark Mode Support**:
+    *   Semua layar (Dashboard, Detail, List Chapter, Settings) otomatis beradaptasi dengan tema gelap/terang HP.
+    *   Warna teks dan background menggunakan **Semantic Colors** (`text_primary`, `background_primary`) agar selalu kontras dan terbaca.
+*   **Immersive Navigation**: Menghilangkan tombol Back (HomeAsUp) yang tidak perlu di halaman utama dan menggunakan Bottom Navigation sebagai pusat kontrol.
+*   **Loading Animation**: Progress bar kustom dengan animasi berputar yang unik.
+
+---
 
 ## 🛠️ Technology Stack
 
-*   **Bahasa**: Kotlin 100%
-*   **Architecture**: MVVM (Model-View-ViewModel)
-*   **Database**: Android Room Database (SQLite) v3
-*   **Networking**: Retrofit & OkHttp
-*   **Image Loading**: Glide + Custom Placeholders
+*   **Language**: Kotlin 100%
+*   **Architecture**: MVVM (Model-View-ViewModel) + Repository Pattern
+*   **UI Framework**: XML Layouts (Material Design 3 Components)
+*   **Local DB**: Android Room Database (SQLite) v3
+*   **Networking**: Retrofit 2 + OkHttp 3
+*   **Image Loader**: Glide 4.x
 *   **Concurrency**: Kotlin Coroutines & Flow
-*   **Design**: XML Layouts (Material Design 3 Component)
-*   **Security**: Password Hashing (SHA-256)
+*   **Build System**: Gradle Kotlin DSL
 
-## 🔒 Keamanan & Privasi
+---
 
-Demi keamanan, file konfigurasi berikut **TIDAK DISERTAKAN** dalam repository ini (tercantum dalam `.gitignore`):
-*   `google-services.json` (Konfigurasi Firebase & Google Sign-In)
-*   `local.properties` (SDK Location & sensitive keys)
-*   `key.properties` (Signing Keystore credentials)
-*   `*.jks` (Keystore file untuk rilis)
+## 🔒 Catatan Keamanan (Security Note)
 
-> Jika Anda ingin men-deploy ulang aplikasi ini, harap buat Firebase Project Anda sendiri dan masukkan `google-services.json` milik Anda.
+Demi menjaga keamanan kredensial dan API Key, file konfigurasi berikut **TIDAK DI-UPLOAD** ke repository ini (sudah dimasukkan ke `.gitignore`):
 
-## 🚀 Cara Menjalankan
+1.  `google-services.json` (Konfigurasi Firebase & Google Sign-In)
+2.  `local.properties` (SDK Location & Sensitive Keys)
+3.  `key.properties` (Signing Keystore Credentials)
+4.  `*.jks` (KeyStore File untuk Signing Release APK)
 
-1.  Clone repository ini:
+> **Penting**: Jika Anda meng-clone project ini, aplikasi tetap bisa berjalan (build success) namun fitur seperti Google Sign-In mungkin memerlukan konfigurasi `google-services.json` milik Anda sendiri.
+
+---
+
+## 🚀 Cara Menjalankan Project
+
+1.  **Clone Repository**:
     ```bash
     git clone https://github.com/MuhammadRizalNurfirdaus/Komikita.git
     ```
-2.  Buka di Android Studio Ladybug atau versi terbaru.
-3.  Pastikan JDK 17 atau 21 terinstall.
-4.  Sync Project dengan Gradle Files.
-5.  Run (`Shift+F10`) ke Emulator atau Device fisik.
+2.  **Buka di Android Studio**: Gunakan versi terbaru (Ladybug/Jellyfish).
+3.  **Sync Gradle**: Biarkan Android Studio mendownload dependency.
+4.  **Run App**: Tekan tombol **Run** (`Shift+F10`) dan pilih Emulator/Device Anda.
+    *   Aplikasi akan otomatis membuat Database Lokal saat pertama kali dijalankan.
+    *   Anda bisa langsung mencoba fitur Register/Login.
 
 ---
-*Dibuat untuk memenuhi Tugas Ujian Akhir Semester (UAS) Mata Kuliah Bahasa Pemrograman 3.*
+
+*Dibuat dengan ❤️ untuk memenuhi tugas UAS pemrograman.*

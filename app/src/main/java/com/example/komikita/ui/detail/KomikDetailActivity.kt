@@ -45,6 +45,7 @@ class KomikDetailActivity : AppCompatActivity() {
         
         setupToolbar()
         setupFab()
+        setupRetry()
         loadDetail()
         checkFavoriteStatus()
     }
@@ -113,6 +114,15 @@ class KomikDetailActivity : AppCompatActivity() {
             handleFavoriteClick()
         }
     }
+
+    private fun setupRetry() {
+        binding.layoutNoInternet.btnRetry.setOnClickListener {
+            loadDetail()
+        }
+        binding.layoutNoInternet.ivRetry.setOnClickListener {
+            loadDetail()
+        }
+    }
     
     private fun handleFavoriteClick() {
         // Check if user is logged in
@@ -167,6 +177,7 @@ class KomikDetailActivity : AppCompatActivity() {
     }
     
     private fun loadDetail() {
+        binding.layoutNoInternet.root.visibility = View.GONE
         komikId?.let { id ->
             lifecycleScope.launch(Dispatchers.IO) {
                 val result = repository.getKomikDetail(id)
@@ -224,6 +235,7 @@ class KomikDetailActivity : AppCompatActivity() {
                         }
                     }.onFailure {
                         Toast.makeText(this@KomikDetailActivity, "Failed to load details", Toast.LENGTH_SHORT).show()
+                        binding.layoutNoInternet.root.visibility = View.VISIBLE
                     }
                 }
             }

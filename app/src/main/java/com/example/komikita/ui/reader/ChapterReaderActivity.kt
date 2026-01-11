@@ -87,9 +87,17 @@ class ChapterReaderActivity : AppCompatActivity() {
         // IDs for buttons are now defined in XML
         val btnPrev = findViewById<Button>(R.id.btnPrev)
         val btnNext = findViewById<Button>(R.id.btnNext)
+        val btnRefresh = findViewById<View>(R.id.btnRefresh)
         
         btnPrev?.setOnClickListener {
             prevChapterId?.let { id ->
+                loadChapter(id)
+            }
+        }
+        
+        btnRefresh?.setOnClickListener {
+            chapterId?.let { id ->
+                Toast.makeText(this, "Reloading chapter...", Toast.LENGTH_SHORT).show()
                 loadChapter(id)
             }
         }

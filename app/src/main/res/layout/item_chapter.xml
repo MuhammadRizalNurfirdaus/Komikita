@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:text="Chapter 1"
         android:textSize="16sp"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:id="@+id/tvDate"
@@ -21,6 +21,6 @@
         android:layout_height="wrap_content"
         android:text="2 days ago"
         android:textSize="12sp"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="@color/text_secondary" />
 
 </LinearLayout>

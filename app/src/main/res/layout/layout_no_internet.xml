@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutNoInternet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,10 +12,11 @@
     android:visibility="gone">
 
     <ImageView
+        android:id="@+id/ivRetry"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@android:drawable/ic_dialog_alert"
-        android:tint="#FF6B35"
+        android:src="@android:drawable/ic_popup_sync"
+        app:tint="#FF6B35"
         android:layout_marginBottom="16dp" />
 
     <TextView
