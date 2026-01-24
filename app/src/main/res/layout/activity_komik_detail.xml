@@ -3,11 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/background_primary">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:background="#FF6B35"
         app:elevation="0dp">
 
@@ -18,16 +20,13 @@
             android:background="#FF6B35"
             app:titleTextColor="@color/white"
             app:title="Detail"
-            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
+            app:navigationIcon="@drawable/ic_close" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include 
-        android:id="@+id/layoutNoInternet"
-        layout="@layout/layout_no_internet"
-        android:visibility="gone" />
-
+    <!-- Content ScrollView - will be hidden when no internet -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollViewContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -134,13 +133,115 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <!-- No Internet Layout - covers entire area below toolbar -->
+    <LinearLayout
+        android:id="@+id/layoutNoInternet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/background_primary"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:id="@+id/ivNoInternet"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_no_internet"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:id="@+id/tvNoInternetTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tidak Ada Koneksi Internet"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvNoInternetSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Periksa koneksi internet Anda dan coba lagi"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:layout_marginBottom="32dp" />
+
+        <Button
+            android:id="@+id/btnRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:paddingHorizontal="32dp"
+            android:text="Coba Lagi"
+            android:textColor="@color/white"
+            android:backgroundTint="#FF6B35"
+            app:icon="@drawable/ic_refresh"
+            app:iconTint="@color/white"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+    </LinearLayout>
+
+    <!-- Download Progress Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardDownloadProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="80dp"
+        android:layout_marginHorizontal="16dp"
+        app:cardBackgroundColor="@color/card_background"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvDownloadStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Downloading..."
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <ProgressBar
+                android:id="@+id/pbDownload"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progress="0"
+                android:max="100" />
+
+            <TextView
+                android:id="@+id/tvDownloadInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chapter 1 (0%)"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:src="@android:drawable/btn_star_big_off"
+        android:src="@drawable/ic_star_outline"
         app:tint="@color/white"
         app:backgroundTint="#FF6B35" />
 

@@ -37,6 +37,7 @@ class DashboardActivity : AppCompatActivity() {
         setupRecyclerView()
         setupBottomNavigation()
         setupToolbar()
+        setupRetry()
         loadComics()
     }
     
@@ -59,6 +60,12 @@ class DashboardActivity : AppCompatActivity() {
         
         binding.rvComics.layoutManager = GridLayoutManager(this, 2)
         binding.rvComics.adapter = adapter
+    }
+    
+    private fun setupRetry() {
+        binding.layoutNoInternet.btnRetry.setOnClickListener {
+            loadComics()
+        }
     }
     
     private fun setupBottomNavigation() {
@@ -102,25 +109,38 @@ class DashboardActivity : AppCompatActivity() {
     
     private fun loadComics() {
         binding.progressBar.visibility = View.VISIBLE
+        binding.layoutNoInternet.root.visibility = View.GONE
+        binding.rvComics.visibility = View.GONE
         
         CoroutineScope(Dispatchers.IO).launch {
-            val result = repository.getMangaList(currentPage)
-            
-            withContext(Dispatchers.Main) {
-                binding.progressBar.visibility = View.GONE
+            try {
+                val result = repository.getMangaList(currentPage)
                 
-                result.onSuccess { response ->
-                    response.data?.let { comics ->
-                        adapter.submitList(comics)
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    
+                    result.onSuccess { response ->
+                        response.data?.let { comics ->
+                            binding.rvComics.visibility = View.VISIBLE
+                            adapter.submitList(comics)
+                        } ?: run {
+                            showNoInternetState()
+                        }
+                    }.onFailure { error ->
+                        showNoInternetState()
                     }
-                }.onFailure { error ->
-                    Toast.makeText(
-                        this@DashboardActivity,
-                        "Error: ${error.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    showNoInternetState()
                 }
             }
         }
+    }
+    
+    private fun showNoInternetState() {
+        binding.rvComics.visibility = View.GONE
+        binding.layoutNoInternet.root.visibility = View.VISIBLE
     }
 }

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/background_primary">
 
     <ScrollView
@@ -99,7 +100,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_day"
+                android:src="@drawable/ic_dark_mode"
+                app:tint="@color/text_primary"
                 android:layout_marginEnd="16dp" />
 
             <TextView
@@ -138,7 +140,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_edit"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/text_primary"
                 android:layout_marginEnd="16dp" />
 
             <TextView
@@ -152,7 +155,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_more" />
+                android:src="@drawable/ic_more"
+                app:tint="@color/text_secondary" />
 
         </LinearLayout>
 
@@ -177,9 +181,9 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_lock_power_off"
+                android:src="@drawable/ic_logout"
                 android:layout_marginEnd="16dp"
-                android:tint="#F44336" />
+                app:tint="#F44336" />
 
             <TextView
                 android:layout_width="0dp"

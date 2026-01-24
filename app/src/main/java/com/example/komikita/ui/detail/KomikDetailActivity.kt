@@ -48,6 +48,7 @@ class KomikDetailActivity : AppCompatActivity() {
         setupRetry()
         loadDetail()
         checkFavoriteStatus()
+        observeDownloadStatus()
     }
     
     private fun setupToolbar() {
@@ -75,38 +76,63 @@ class KomikDetailActivity : AppCompatActivity() {
         
         currentDetail?.chapters?.let { chapters ->
             val bottomSheet = DownloadSelectionBottomSheet.newInstance(chapters)
-            bottomSheet.setOnDownloadClickListener { chapter ->
-                // Start download for this chapter
-                downloadChapter(chapter)
+            bottomSheet.setOnDownloadClickListener { selectedChapters ->
+                // Start download for all selected chapters
+                downloadChapters(selectedChapters)
             }
             bottomSheet.show(supportFragmentManager, "DownloadSelectionBottomSheet")
         }
     }
 
-    private fun downloadChapter(chapter: com.example.komikita.data.model.Chapter) {
-        val userId = sessionManager.getUserId() ?: return
-        
-        Toast.makeText(this, "Mulai download ${chapter.chapter}...", Toast.LENGTH_SHORT).show()
-        
-        lifecycleScope.launch(Dispatchers.IO) {
-             val downloadDao = AppDatabase.getDatabase(this@KomikDetailActivity).downloadDao()
-
-             // Basic mock download entry creation
-             val download = DownloadEntity(
-                komikSlug = komikId ?: "",
-                komikTitle = currentDetail?.title ?: "Unknown",
-                chapterId = chapter.id,
-                chapterTitle = chapter.chapter ?: "Chapter",
-                userId = userId,
-                localPath = null,
-                status = "completed"
-             )
-             downloadDao.insertDownload(download)
-             
-             withContext(Dispatchers.Main) {
-                 Toast.makeText(this@KomikDetailActivity, "Download selesai! ✅", Toast.LENGTH_SHORT).show()
-             }
+    private fun checkNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
+            }
         }
+    }
+
+    private fun observeDownloadStatus() {
+        lifecycleScope.launch {
+            com.example.komikita.util.DownloadManager.status.collect { status ->
+                withContext(Dispatchers.Main) {
+                    if (status.isDownloading) {
+                        try {
+                            binding.cardDownloadProgress.visibility = View.VISIBLE
+                            binding.tvDownloadStatus.text = status.message
+                            binding.pbDownload.progress = status.progress
+                            binding.tvDownloadInfo.text = "Chapter ${status.currentChapterIndex}/${status.totalChapters}"
+                        } catch (e: Exception) {
+                            // View might not be bound if updated rapidly
+                        }
+                    } else if (status.message.isNotEmpty() && binding.cardDownloadProgress.visibility == View.VISIBLE) {
+                         binding.tvDownloadStatus.text = status.message
+                         binding.pbDownload.progress = 100
+                         // Keep visible for a moment then hide
+                         kotlinx.coroutines.delay(3000)
+                         binding.cardDownloadProgress.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun downloadChapters(chapters: List<com.example.komikita.data.model.Chapter>) {
+        val userId = sessionManager.getUserId() ?: return
+        val currentTitle = currentDetail?.title ?: "Komik"
+        val slug = komikId ?: ""
+        
+        checkNotificationPermission()
+        
+        com.example.komikita.util.DownloadManager.startDownload(
+            this,
+            userId,
+            slug,
+            currentTitle,
+            chapters
+        )
+        
+        Toast.makeText(this, "Download dimulai di latar belakang", Toast.LENGTH_SHORT).show()
     }
     
     private fun setupFab() {
@@ -116,10 +142,11 @@ class KomikDetailActivity : AppCompatActivity() {
     }
 
     private fun setupRetry() {
-        binding.layoutNoInternet.btnRetry.setOnClickListener {
+        binding.btnRetry.setOnClickListener {
             loadDetail()
         }
-        binding.layoutNoInternet.ivRetry.setOnClickListener {
+        // Click anywhere on the no-internet layout to retry
+        binding.layoutNoInternet.setOnClickListener {
             loadDetail()
         }
     }
@@ -170,20 +197,24 @@ class KomikDetailActivity : AppCompatActivity() {
     
     private fun updateFavoriteIcon(isFav: Boolean) {
         if (isFav) {
-            binding.fabFavorite.setImageResource(android.R.drawable.btn_star_big_on)
+            binding.fabFavorite.setImageResource(R.drawable.ic_star_filled)
         } else {
-            binding.fabFavorite.setImageResource(android.R.drawable.btn_star_big_off)
+            binding.fabFavorite.setImageResource(R.drawable.ic_star_outline)
         }
     }
     
     private fun loadDetail() {
-        binding.layoutNoInternet.root.visibility = View.GONE
+        // Hide error, show content
+        binding.layoutNoInternet.visibility = View.GONE
+        binding.scrollViewContent.visibility = View.VISIBLE
+        binding.fabFavorite.visibility = View.VISIBLE
         komikId?.let { id ->
             lifecycleScope.launch(Dispatchers.IO) {
                 val result = repository.getKomikDetail(id)
                 
                 withContext(Dispatchers.Main) {
                     result.onSuccess { response ->
+                        // API returns: {"status": true, "data": {...}}
                         val detail = response.data
                         if (detail != null) {
                             currentDetail = detail
@@ -235,7 +266,10 @@ class KomikDetailActivity : AppCompatActivity() {
                         }
                     }.onFailure {
                         Toast.makeText(this@KomikDetailActivity, "Failed to load details", Toast.LENGTH_SHORT).show()
-                        binding.layoutNoInternet.root.visibility = View.VISIBLE
+                        // Show error, hide content
+                        binding.layoutNoInternet.visibility = View.VISIBLE
+                        binding.scrollViewContent.visibility = View.GONE
+                        binding.fabFavorite.visibility = View.GONE
                     }
                 }
             }

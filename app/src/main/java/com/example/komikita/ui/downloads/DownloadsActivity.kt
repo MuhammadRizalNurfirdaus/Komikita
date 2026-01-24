@@ -11,9 +11,9 @@ import com.example.komikita.data.local.AppDatabase
 import com.example.komikita.data.local.entity.DownloadEntity
 import com.example.komikita.R
 import com.example.komikita.databinding.ActivityDownloadsBinding
-import com.example.komikita.ui.adapter.DownloadAdapter
+import com.example.komikita.ui.adapter.DownloadFolder
+import com.example.komikita.ui.adapter.DownloadFolderAdapter
 import com.example.komikita.ui.auth.LoginActivity
-import com.example.komikita.ui.reader.ChapterReaderActivity
 import com.example.komikita.util.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +24,7 @@ class DownloadsActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityDownloadsBinding
     private lateinit var sessionManager: SessionManager
-    private lateinit var adapter: DownloadAdapter
+    private lateinit var folderAdapter: DownloadFolderAdapter
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,24 +85,16 @@ class DownloadsActivity : AppCompatActivity() {
     }
     
     private fun setupRecyclerView() {
-        adapter = DownloadAdapter(
-            onItemClick = { download ->
-                // Open chapter reader in offline mode
-                val intent = Intent(this, ChapterReaderActivity::class.java)
-                intent.putExtra("CHAPTER_ID", download.chapterId)
-                intent.putExtra("KOMIK_SLUG", download.komikSlug)
-                intent.putExtra("KOMIK_TITLE", download.komikTitle)
-                intent.putExtra("IS_OFFLINE", true)
-                intent.putExtra("LOCAL_PATH", download.localPath)
-                startActivity(intent)
-            },
-            onDeleteClick = { download ->
-                deleteDownload(download)
-            }
-        )
+        folderAdapter = DownloadFolderAdapter { folder ->
+            // Open chapters inside folder
+            val intent = Intent(this, DownloadChaptersActivity::class.java)
+            intent.putExtra("KOMIK_SLUG", folder.komikSlug)
+            intent.putExtra("KOMIK_TITLE", folder.komikTitle)
+            startActivity(intent)
+        }
         
         binding.rvDownloads.layoutManager = LinearLayoutManager(this)
-        binding.rvDownloads.adapter = adapter
+        binding.rvDownloads.adapter = folderAdapter
     }
     
     private fun setupEmptyState() {
@@ -140,7 +132,20 @@ class DownloadsActivity : AppCompatActivity() {
                         showEmptyState(true)
                     } else {
                         showEmptyState(false)
-                        adapter.submitList(downloads)
+                        
+                        // Group downloads by komik
+                        val folders = downloads
+                            .groupBy { it.komikSlug }
+                            .map { (slug, items) ->
+                                DownloadFolder(
+                                    komikSlug = slug,
+                                    komikTitle = items.first().komikTitle,
+                                    chapterCount = items.size
+                                )
+                            }
+                            .sortedBy { it.komikTitle }
+                        
+                        folderAdapter.submitList(folders)
                     }
                 }
             }
@@ -150,23 +155,6 @@ class DownloadsActivity : AppCompatActivity() {
     private fun showEmptyState(show: Boolean) {
         binding.emptyState.visibility = if (show) View.VISIBLE else View.GONE
         binding.rvDownloads.visibility = if (show) View.GONE else View.VISIBLE
-    }
-    
-    private fun deleteDownload(download: DownloadEntity) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val downloadDao = AppDatabase.getDatabase(this@DownloadsActivity).downloadDao()
-            downloadDao.deleteDownload(download)
-            
-            // TODO: Also delete local files
-            
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@DownloadsActivity,
-                    "${download.chapterTitle} dihapus dari download",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
     }
     
     override fun onResume() {

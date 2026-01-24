@@ -12,36 +12,44 @@
     android:visibility="gone">
 
     <ImageView
-        android:id="@+id/ivRetry"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@android:drawable/ic_popup_sync"
-        app:tint="#FF6B35"
-        android:layout_marginBottom="16dp" />
+        android:id="@+id/ivNoInternet"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_no_internet"
+        android:layout_marginBottom="24dp" />
 
     <TextView
+        android:id="@+id/tvNoInternetTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tidak Ada Koneksi Internet"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
         android:layout_marginBottom="8dp" />
 
     <TextView
+        android:id="@+id/tvNoInternetSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Periksa koneksi internet Anda dan coba lagi"
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
-        android:layout_marginBottom="24dp" />
+        android:gravity="center"
+        android:paddingHorizontal="32dp"
+        android:layout_marginBottom="32dp" />
 
     <Button
         android:id="@+id/btnRetry"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="COBA LAGI"
+        android:layout_height="48dp"
+        android:paddingHorizontal="32dp"
+        android:text="Coba Lagi"
+        android:textColor="@color/white"
         android:backgroundTint="#FF6B35"
-        android:textColor="@color/white" />
+        app:icon="@drawable/ic_refresh"
+        app:iconTint="@color/white"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp" />
 
 </LinearLayout>

@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardChapter"
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_margin="4dp"
     app:cardBackgroundColor="#333333"
     app:cardCornerRadius="8dp"
     app:cardElevation="0dp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    android:checkable="true">
 
-    <TextView
-        android:id="@+id/tvChapterNumber"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="275"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tvChapterNumber"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="275"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <!-- Checkmark indicator when selected -->
+        <ImageView
+            android:id="@+id/ivCheckmark"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="4dp"
+            android:src="@drawable/ic_download_done"
+            android:visibility="gone"
+            app:tint="#FF6B35" />
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

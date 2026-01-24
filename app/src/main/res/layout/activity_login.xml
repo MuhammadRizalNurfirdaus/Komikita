@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
+            app:startIconDrawable="@drawable/ic_email"
             android:hint="Email">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+            app:startIconDrawable="@drawable/ic_lock"
             app:endIconMode="password_toggle"
             android:hint="Password">
 
@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:text="Sign in with Google"
             android:textColor="@color/white"
-            app:icon="@android:drawable/ic_menu_my_calendar"
+            app:icon="@drawable/ic_profile"
             app:iconGravity="textStart"
             app:cornerRadius="8dp"
             android:padding="16dp"

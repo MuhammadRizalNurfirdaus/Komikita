@@ -18,7 +18,7 @@
             android:id="@+id/btnBack"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:src="@drawable/ic_close"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_gravity="start"
             android:contentDescription="Back" />
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:hint="Nama Lengkap"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_menu_myplaces"
+            app:startIconDrawable="@drawable/ic_profile"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:hint="Email"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
+            app:startIconDrawable="@drawable/ic_email"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:hint="Password (minimal 6 karakter)"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+            app:startIconDrawable="@drawable/ic_lock"
             app:endIconMode="password_toggle"
             android:layout_marginBottom="16dp">
 
@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:hint="Konfirmasi Password"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+            app:startIconDrawable="@drawable/ic_lock"
             app:endIconMode="password_toggle"
             android:layout_marginBottom="16dp">
 

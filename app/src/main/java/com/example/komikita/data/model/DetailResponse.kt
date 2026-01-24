@@ -2,10 +2,10 @@ package com.example.komikita.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Chapter(
-    val chapter: String?,
-    @SerializedName("chapter_id") val id: String,
-    val date: String?
+// API returns: {"status": true, "data": {...}}
+data class DetailResponse(
+    @SerializedName("status") val status: Boolean?,
+    @SerializedName("data") val data: DetailData?
 )
 
 data class DetailData(
@@ -14,16 +14,16 @@ data class DetailData(
     @SerializedName("description") val description: String?,
     @SerializedName("genres") val genres: List<String>?,
     @SerializedName("poster") val poster: String?,
-    @SerializedName("release_date") val release_date: String?,
+    @SerializedName("release_date") val releaseDate: String?,
     @SerializedName("status") val status: String?,
     @SerializedName("title") val title: String?,
-    @SerializedName("total_chapter") val total_chapter: String?,
+    @SerializedName("total_chapter") val totalChapter: String?,
     @SerializedName("type") val type: String?,
-    @SerializedName("updated_on") val updated_on: String?
+    @SerializedName("updated_on") val updatedOn: String?
 )
 
-data class DetailResponse(
-    @SerializedName("data") val data: DetailData?,
-    @SerializedName("status") val status: Boolean?,
-    @SerializedName("message") val message: String?
+data class Chapter(
+    @SerializedName("chapter") val chapter: String?,
+    @SerializedName("chapter_id") val id: String,
+    @SerializedName("date") val date: String?
 )

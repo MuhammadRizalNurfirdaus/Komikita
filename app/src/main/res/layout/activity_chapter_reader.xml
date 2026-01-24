@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="#000000">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:fitsSystemWindows="true">
 
         <!-- Toolbar -->
         <com.google.android.material.appbar.MaterialToolbar
@@ -18,7 +20,7 @@
             android:background="#1A1A1A"
             app:titleTextColor="@color/white"
             app:title="Reading"
-            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
+            app:navigationIcon="@drawable/ic_close" />
 
         <!-- Pages RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
@@ -57,7 +59,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_popup_sync"
+                android:src="@drawable/ic_refresh"
                 app:tint="@color/white" />
 
             <Space
@@ -84,7 +86,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
-        android:indeterminateDrawable="@drawable/progress_custom" />
+        android:indeterminateDrawable="@drawable/loading_animation" />
 
     <!-- Download FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -96,7 +98,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="80dp"
-        android:src="@android:drawable/stat_sys_download"
+        android:src="@drawable/ic_download"
         app:tint="@color/white"
         app:backgroundTint="#FF6B35" />
 

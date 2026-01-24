@@ -6,8 +6,14 @@
     
     <!-- Semantic Colors (Light) -->
     <color name="background_primary">#FFFFFF</color>
-    <color name="text_primary">#000000</color>
-    <color name="text_secondary">#666666</color>
+    <color name="background_secondary">#F5F5F5</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_shadow">#40000000</color>
+    <color name="divider">#E0E0E0</color>
+    
+    <!-- Bottom Navigation -->
     <color name="bottom_nav_background">#FFFFFF</color>
     <color name="bottom_nav_icon">#757575</color>
     <color name="bottom_nav_item_active">#FF6B35</color>

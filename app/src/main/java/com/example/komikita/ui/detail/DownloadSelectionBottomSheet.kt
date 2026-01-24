@@ -15,7 +15,9 @@ class DownloadSelectionBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentDownloadSelectionBottomSheetBinding
     private var chapters: List<Chapter> = emptyList()
-    private var onDownloadClick: ((Chapter) -> Unit)? = null
+    private var onDownloadClick: ((List<Chapter>) -> Unit)? = null
+    private var isAllSelected = false
+    private lateinit var adapter: DownloadGridAdapter
 
     companion object {
         fun newInstance(chapters: List<Chapter>): DownloadSelectionBottomSheet {
@@ -25,7 +27,7 @@ class DownloadSelectionBottomSheet : BottomSheetDialogFragment() {
         }
     }
     
-    fun setOnDownloadClickListener(listener: (Chapter) -> Unit) {
+    fun setOnDownloadClickListener(listener: (List<Chapter>) -> Unit) {
         onDownloadClick = listener
     }
 
@@ -44,13 +46,46 @@ class DownloadSelectionBottomSheet : BottomSheetDialogFragment() {
         binding.tvTotalChapters.text = "Total Chapter ${chapters.size}"
         binding.btnBack.setOnClickListener { dismiss() }
 
-        val adapter = DownloadGridAdapter { chapter ->
-            onDownloadClick?.invoke(chapter)
-            dismiss()
+        adapter = DownloadGridAdapter { selectedChapters ->
+            updateSelectedCount(selectedChapters.size)
         }
 
-        binding.rvDownloadGrid.layoutManager = GridLayoutManager(requireContext(), 4) // 4 columns like in image
+        binding.rvDownloadGrid.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvDownloadGrid.adapter = adapter
         adapter.submitList(chapters)
+
+        // Select All / Deselect All toggle
+        binding.btnSelectAll.setOnClickListener {
+            if (isAllSelected) {
+                adapter.deselectAll()
+                binding.btnSelectAll.text = "Pilih Semua"
+                isAllSelected = false
+            } else {
+                adapter.selectAll()
+                binding.btnSelectAll.text = "Batalkan Semua"
+                isAllSelected = true
+            }
+        }
+
+        // Download selected chapters
+        binding.btnDownloadSelected.setOnClickListener {
+            val selected = adapter.getSelectedChapters().toList()
+            if (selected.isNotEmpty()) {
+                onDownloadClick?.invoke(selected)
+                dismiss()
+            } else {
+                Toast.makeText(context, "Pilih minimal 1 chapter", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateSelectedCount(count: Int) {
+        binding.tvSelectedCount.text = "$count chapter dipilih"
+        binding.btnDownloadSelected.text = "Download ($count)"
+        binding.btnDownloadSelected.isEnabled = count > 0
+        
+        // Update select all text based on selection
+        isAllSelected = count == chapters.size
+        binding.btnSelectAll.text = if (isAllSelected) "Batalkan Semua" else "Pilih Semua"
     }
 }

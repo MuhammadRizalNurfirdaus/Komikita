@@ -2,11 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="brand_orange">#FF6B35</color>
     
     <!-- Semantic Colors (Dark) -->
     <color name="background_primary">#121212</color>
+    <color name="background_secondary">#1E1E1E</color>
+    <color name="card_background">#2D2D2D</color>
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#B0B0B0</color>
+    <color name="text_shadow">#40FFFFFF</color>
+    <color name="divider">#424242</color>
+    
+    <!-- Bottom Navigation -->
     <color name="bottom_nav_background">#1E1E1E</color>
     <color name="bottom_nav_icon">#B0B0B0</color>
     <color name="bottom_nav_item_active">#FF6B35</color>

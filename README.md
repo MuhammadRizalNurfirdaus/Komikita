@@ -47,12 +47,16 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma.
 *   **Smart Scroll**: Layout Detail Komik yang presisi menggunakan `NestedScrollView`, mencegah scroll berlebih pada konten pendek.
 *   **Error Handling**: Tampilan "No Internet" interaktif dengan tombol **Retry/Refresh** untuk memuat ulang data.
 
-### 3. Manajemen Konten Offline (Database & Download)
-*   **Fitur Download**: Unduh chapter favorit Anda dan baca kapan saja tanpa internet!
-    *   File terdaftar di database `DownloadEntity`.
-    *   Indikator status download (ikon berubah saat selesai).
-*   **Favorit**: Simpan komik ke daftar Favorit pribadi user.
-*   **Sinkronisasi**: Data favorit dan download terikat pada akun user masing-masing.
+### 3. Manajemen Konten Offline (Real Offline Mode)
+*   **Real Download System (NEW)**:
+    *   **Physical File Storage**: Gambar komik benar-benar diunduh dan disimpan di penyimpanan internal perangkat (`ImageDownloader`), bukan hanya data dummy.
+    *   **Background Manager**: Download berjalan lancar di latar belakang menggunakan `DownloadManager` dengan dukungan `SupervisorJob`.
+    *   **Progress Monitoring**:
+        *   **In-App**: Kartu status download realtime di halaman Detail.
+        *   **Notification**: Notifikasi persisten di status bar yang menampilkan progress setiap chapter.
+*   **Smart Offline Reader**: Otomatis mendeteksi saat tidak ada internet dan membaca file gambar dari penyimpanan lokal dengan **Zero Loading Time**.
+*   **Organized Library**: Halaman Downloads kini menampilkan **Folder Judul Komik** yang rapi, dengan chapter yang terurut otomatis di dalamnya.
+*   **Favorit & Sinkronisasi**: Desain halaman Favorit yang konsisten dengan tema aplikasi (Brand Orange), data terikat pada akun user.
 
 ### 4. UI/UX & Tampilan Visual
 *   **Full Dark Mode Support**:

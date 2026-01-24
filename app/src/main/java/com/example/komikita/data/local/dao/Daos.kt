@@ -69,6 +69,9 @@ interface DownloadDao {
     @Query("SELECT * FROM downloads WHERE komikSlug = :slug")
     fun getDownloadsByKomik(slug: String): Flow<List<DownloadEntity>>
     
+    @Query("SELECT * FROM downloads WHERE userId = :userId AND komikSlug = :slug ORDER BY chapterTitle ASC")
+    fun getDownloadsByKomik(userId: String, slug: String): Flow<List<DownloadEntity>>
+    
     @Query("SELECT * FROM downloads WHERE chapterId = :chapterId AND userId = :userId LIMIT 1")
     suspend fun getDownloadByChapterAndUser(chapterId: String, userId: String): DownloadEntity?
     

@@ -53,12 +53,21 @@ class ChapterReaderActivity : AppCompatActivity() {
         
         setupToolbar()
         setupRecyclerView()
-        setupDownloadFab()
+        setupDownloadFab(isOffline)
         setupNavigation()
         
         if (isOffline) {
-            // Load from local storage (TODO: implement)
-            Toast.makeText(this, "Offline mode - coming soon", Toast.LENGTH_SHORT).show()
+            // Hide download FAB in offline mode
+            binding.fabDownload.visibility = View.GONE
+            
+            // Load from local storage
+            val localPath = intent.getStringExtra("LOCAL_PATH")
+            if (localPath != null) {
+                loadLocalChapter(localPath)
+            } else {
+                Toast.makeText(this, "Error: Path not found", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         } else {
             chapterId?.let { loadChapter(it) }
         }
@@ -77,9 +86,13 @@ class ChapterReaderActivity : AppCompatActivity() {
         binding.rvPages.adapter = adapter
     }
     
-    private fun setupDownloadFab() {
-        binding.fabDownload.setOnClickListener {
-            handleDownloadClick()
+    private fun setupDownloadFab(isOffline: Boolean = false) {
+        if (isOffline) {
+            binding.fabDownload.visibility = View.GONE
+        } else {
+            binding.fabDownload.setOnClickListener {
+                handleDownloadClick()
+            }
         }
     }
     
@@ -160,9 +173,9 @@ class ChapterReaderActivity : AppCompatActivity() {
     
     private fun updateDownloadButton(downloaded: Boolean) {
         if (downloaded) {
-            binding.fabDownload.setImageResource(android.R.drawable.stat_sys_download_done)
+            binding.fabDownload.setImageResource(R.drawable.ic_download_done)
         } else {
-            binding.fabDownload.setImageResource(android.R.drawable.stat_sys_download)
+            binding.fabDownload.setImageResource(R.drawable.ic_download)
         }
     }
     
@@ -268,6 +281,40 @@ class ChapterReaderActivity : AppCompatActivity() {
                     "Chapter berhasil didownload! 📥",
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        }
+    }
+
+    private fun loadLocalChapter(localPath: String) {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.rvPages.visibility = View.GONE
+        binding.layoutNoInternet.root.visibility = View.GONE
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // Get list of image paths from local directory
+                val images = com.example.komikita.util.ImageDownloader.getChapterImages(localPath)
+                
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    
+                    if (images.isNotEmpty()) {
+                        imageUrls = images
+                        adapter.submitList(images)
+                        binding.rvPages.visibility = View.VISIBLE
+                        // Hide navigation for offline mode as we only download single chapters for now
+                        binding.layoutNavigation.visibility = View.GONE 
+                    } else {
+                        binding.layoutNoInternet.root.visibility = View.VISIBLE
+                        Toast.makeText(this@ChapterReaderActivity, "No images found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    binding.progressBar.visibility = View.GONE
+                    binding.layoutNoInternet.root.visibility = View.VISIBLE
+                    Toast.makeText(this@ChapterReaderActivity, "Error loading chapter: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

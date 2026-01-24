@@ -14,24 +14,26 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="8dp">
 
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:src="@drawable/ic_close"
             app:tint="@color/white"
             android:layout_marginEnd="16dp"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Pilih Chapter Download"
             android:textColor="@color/white"
             android:textSize="18sp"
@@ -39,18 +41,68 @@
             
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvTotalChapters"
+    <!-- Selection Info & Controls -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Total Chapter 0"
-        android:textColor="@color/text_secondary"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvTotalChapters"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Total Chapter 0"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/btnSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih Semua"
+            android:textColor="#FF6B35"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+    <!-- Selected Count -->
+    <TextView
+        android:id="@+id/tvSelectedCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0 chapter dipilih"
+        android:textColor="#FF6B35"
         android:textSize="14sp"
-        android:layout_marginBottom="16dp" />
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDownloadGrid"
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="350dp" />
+
+    <!-- Download Button -->
+    <Button
+        android:id="@+id/btnDownloadSelected"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:text="Download (0)"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:backgroundTint="#FF6B35"
+        android:enabled="false"
+        app:icon="@drawable/ic_download"
+        app:iconTint="@color/white"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:cornerRadius="12dp" />
 
 </LinearLayout>
