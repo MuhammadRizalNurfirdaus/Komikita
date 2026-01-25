@@ -16,7 +16,7 @@
 
 **Komikita** adalah aplikasi Android native modern yang dikembangkan menggunakan **Kotlin** dan **MVVM Architecture**. Aplikasi ini dirancang untuk memberikan pengalaman membaca komik (Manga, Manhwa, Manhua) yang premium, responsif, dan nyaman di mata pengguna, dengan dukungan penuh untuk mode Offline.
 
-📥 **Download APK Terbaru**: [app-debug.apk](app-debug.apk) 
+📥 **Download APK Terbaru**: [Komikita_v1.0_Final.apk](Komikita_v1.0_Final.apk) 
 *(File APK telah disiapkan di folder artifacts project ini)*
 
 Project ini telah diselesaikan 100% dan memenuhi standar pengembangan aplikasi Android profesional, termasuk penggunaan **Local Database (Room)**, **Networking (Retrofit)**, dan **Advanced UI Management**.
