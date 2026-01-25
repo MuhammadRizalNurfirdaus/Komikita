@@ -18,7 +18,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class SearchActivity : BaseActivity() {
     
     private lateinit var binding: ActivitySearchBinding
     private lateinit var repository: KomikRepository

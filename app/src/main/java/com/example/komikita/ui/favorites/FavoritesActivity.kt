@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FavoritesActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class FavoritesActivity : BaseActivity() {
     
     private lateinit var binding: ActivityFavoritesBinding
     private lateinit var sessionManager: SessionManager

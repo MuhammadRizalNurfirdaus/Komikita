@@ -1,16 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Komikita" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.Theme.Komikita" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/brand_orange</item>
         <item name="colorPrimaryVariant">@color/brand_orange</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorSecondary">@color/brand_orange</item>
         <item name="colorSecondaryVariant">#E55A2B</item>
+        <item name="colorSecondaryVariant">#E55A2B</item>
         <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#FFDDBB</item>
+        <item name="colorOnSecondaryContainer">#FF6B35</item>
         <!-- Status bar color -->
-        <item name="android:statusBarColor">@color/brand_orange</item>
-        <item name="android:navigationBarColor">@color/background_primary</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
     <style name="Theme.Komikita" parent="Base.Theme.Komikita" />

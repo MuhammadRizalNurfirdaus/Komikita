@@ -21,7 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DashboardActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class DashboardActivity : BaseActivity() {
     
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var repository: KomikRepository
@@ -38,6 +40,9 @@ class DashboardActivity : AppCompatActivity() {
         setupBottomNavigation()
         setupToolbar()
         setupRetry()
+        setupRetry()
+        loadComics()
+        
         loadComics()
     }
     

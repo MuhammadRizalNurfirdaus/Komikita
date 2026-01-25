@@ -22,7 +22,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProfileActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class ProfileActivity : BaseActivity() {
     
     private lateinit var binding: ActivityProfileBinding
     private lateinit var sharedPreferences: SharedPreferences

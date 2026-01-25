@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DownloadsActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class DownloadsActivity : BaseActivity() {
     
     private lateinit var binding: ActivityDownloadsBinding
     private lateinit var sessionManager: SessionManager

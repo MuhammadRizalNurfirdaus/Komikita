@@ -2,11 +2,14 @@ package com.example.komikita.ui.reader
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.komikita.R
@@ -33,6 +36,7 @@ class ChapterReaderActivity : AppCompatActivity() {
     private var chapterTitle: String? = null
     private var isDownloaded = false
     private var imageUrls: List<String> = emptyList()
+    private var isOfflineMode = false
     
     // Navigation IDs
     private var nextChapterId: String? = null
@@ -49,16 +53,21 @@ class ChapterReaderActivity : AppCompatActivity() {
         chapterId = intent.getStringExtra("CHAPTER_ID")
         komikSlug = intent.getStringExtra("KOMIK_SLUG")
         komikTitle = intent.getStringExtra("KOMIK_TITLE")
-        val isOffline = intent.getBooleanExtra("IS_OFFLINE", false)
+        isOfflineMode = intent.getBooleanExtra("IS_OFFLINE", false)
         
         setupToolbar()
         setupRecyclerView()
-        setupDownloadFab(isOffline)
+        setupDownloadFab()
         setupNavigation()
         
-        if (isOffline) {
+        if (isOfflineMode) {
             // Hide download FAB in offline mode
             binding.fabDownload.visibility = View.GONE
+            
+            // Hide Refresh button and spaces in offline mode (Only Next/Prev)
+            findViewById<View>(R.id.btnRefresh)?.visibility = View.GONE
+            findViewById<View>(R.id.space1)?.visibility = View.GONE
+            findViewById<View>(R.id.space2)?.visibility = View.GONE
             
             // Load from local storage
             val localPath = intent.getStringExtra("LOCAL_PATH")
@@ -75,6 +84,7 @@ class ChapterReaderActivity : AppCompatActivity() {
     
     private fun setupToolbar() {
         binding.toolbar.title = komikTitle ?: "Reading"
+        binding.toolbar.subtitle = chapterTitle
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
@@ -86,8 +96,8 @@ class ChapterReaderActivity : AppCompatActivity() {
         binding.rvPages.adapter = adapter
     }
     
-    private fun setupDownloadFab(isOffline: Boolean = false) {
-        if (isOffline) {
+    private fun setupDownloadFab() {
+        if (isOfflineMode) {
             binding.fabDownload.visibility = View.GONE
         } else {
             binding.fabDownload.setOnClickListener {
@@ -96,7 +106,30 @@ class ChapterReaderActivity : AppCompatActivity() {
         }
     }
     
+    private var isNavHidden = false
+    
+    private fun setupScrollListener() {
+        binding.rvPages.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                
+                if (dy > 0 && !isNavHidden) {
+                    // Scroll DOWN - INSTANT HIDE
+                    isNavHidden = true
+                    binding.layoutNavigation.visibility = View.GONE
+                    if (!isOfflineMode) binding.fabDownload.visibility = View.GONE
+                } else if (dy < 0 && isNavHidden) {
+                    // Scroll UP - INSTANT SHOW
+                    isNavHidden = false
+                    binding.layoutNavigation.visibility = View.VISIBLE
+                    if (!isOfflineMode) binding.fabDownload.visibility = View.VISIBLE
+                }
+            }
+        })
+    }
+
     private fun setupNavigation() {
+        setupScrollListener()
         // IDs for buttons are now defined in XML
         val btnPrev = findViewById<Button>(R.id.btnPrev)
         val btnNext = findViewById<Button>(R.id.btnNext)
@@ -215,9 +248,15 @@ class ChapterReaderActivity : AppCompatActivity() {
                             nextChapterId = chapterData.nextChapterId
                             prevChapterId = chapterData.prevChapterId
                             
+                            Log.d("ChapterReader", "===== NAVIGATION DEBUG =====")
+                            Log.d("ChapterReader", "nextChapterId from API: '$nextChapterId'")
+                            Log.d("ChapterReader", "prevChapterId from API: '$prevChapterId'")
+                            
                             // Enable/Disable buttons based on ID availability
-                            val hasNext = !nextChapterId.isNullOrEmpty() && nextChapterId != "null"
-                            val hasPrev = !prevChapterId.isNullOrEmpty() && prevChapterId != "null"
+                            val hasNext = isValidChapterId(nextChapterId)
+                            val hasPrev = isValidChapterId(prevChapterId)
+                            
+                            Log.d("ChapterReader", "hasNext: $hasNext, hasPrev: $hasPrev")
                             
                             updateNavigationButtons(hasPrev, hasNext)
                         }
@@ -238,13 +277,61 @@ class ChapterReaderActivity : AppCompatActivity() {
     private fun updateNavigationButtons(enablePrev: Boolean, enableNext: Boolean) {
         val btnPrev = findViewById<Button>(R.id.btnPrev)
         val btnNext = findViewById<Button>(R.id.btnNext)
+        val btnRefresh = findViewById<View>(R.id.btnRefresh)
+        val space1 = findViewById<View>(R.id.space1)
+        val space2 = findViewById<View>(R.id.space2)
         
-        btnPrev?.isEnabled = enablePrev
-        btnNext?.isEnabled = enableNext
+        // Hide buttons completely if chapter not available
+        btnPrev?.visibility = if (enablePrev) View.VISIBLE else View.GONE
+        btnNext?.visibility = if (enableNext) View.VISIBLE else View.GONE
         
-        // Visual cue (optional, buttons handles enabled state visually usually)
-        btnPrev?.alpha = if (enablePrev) 1.0f else 0.5f
-        btnNext?.alpha = if (enableNext) 1.0f else 0.5f
+        // Handle spaces visibility based on adjacent button visibility
+        // Space1 is between Prev and Refresh - only show if Prev is visible
+        space1?.visibility = if (enablePrev && !isOfflineMode) View.VISIBLE else View.GONE
+        // Space2 is between Refresh and Next - only show if Next is visible  
+        space2?.visibility = if (enableNext && !isOfflineMode) View.VISIBLE else View.GONE
+        
+        // In offline mode, hide refresh button
+        if (isOfflineMode) {
+            btnRefresh?.visibility = View.GONE
+        }
+        
+        // Show/hide the entire navigation layout
+        // In offline mode: hide if no prev AND no next (single chapter downloaded)
+        // In online mode: always show (refresh button is always useful)
+        val hasAnyNavButton = enablePrev || enableNext
+        if (isOfflineMode) {
+            // Offline mode: only show nav if there are navigation buttons
+            binding.layoutNavigation.visibility = if (hasAnyNavButton) View.VISIBLE else View.GONE
+        } else {
+            // Online mode: always show navigation (has refresh button)
+            binding.layoutNavigation.visibility = View.VISIBLE
+        }
+    }
+    
+    // Helper function to check if chapter ID is valid (not null, empty, "null", "0", "undefined", etc.)
+    private fun isValidChapterId(chapterId: String?): Boolean {
+        Log.d("ChapterReader", "Checking chapterId: '$chapterId'")
+        
+        if (chapterId.isNullOrBlank()) {
+            Log.d("ChapterReader", "Invalid: null or blank")
+            return false
+        }
+        if (chapterId.equals("null", ignoreCase = true)) {
+            Log.d("ChapterReader", "Invalid: 'null' string")
+            return false
+        }
+        if (chapterId.equals("undefined", ignoreCase = true)) {
+            Log.d("ChapterReader", "Invalid: 'undefined' string")
+            return false
+        }
+        if (chapterId == "0") {
+            Log.d("ChapterReader", "Invalid: '0'")
+            return false
+        }
+        
+        Log.d("ChapterReader", "Valid chapterId: '$chapterId'")
+        return true
     }
     
     private fun downloadChapter() {
@@ -302,8 +389,9 @@ class ChapterReaderActivity : AppCompatActivity() {
                         imageUrls = images
                         adapter.submitList(images)
                         binding.rvPages.visibility = View.VISIBLE
-                        // Hide navigation for offline mode as we only download single chapters for now
-                        binding.layoutNavigation.visibility = View.GONE 
+                        
+                        // In offline mode with single downloaded chapter, no prev/next available
+                        updateNavigationButtons(enablePrev = false, enableNext = false) 
                     } else {
                         binding.layoutNoInternet.root.visibility = View.VISIBLE
                         Toast.makeText(this@ChapterReaderActivity, "No images found", Toast.LENGTH_SHORT).show()

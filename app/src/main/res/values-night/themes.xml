@@ -1,12 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Komikita" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Customize your dark theme here. -->
+    <!-- Dark theme -->
+    <style name="Base.Theme.Komikita" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Primary colors -->
         <item name="colorPrimary">@color/brand_orange</item>
         <item name="colorPrimaryVariant">@color/brand_orange</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorSecondary">@color/brand_orange</item>
         <item name="colorSecondaryVariant">#E55A2B</item>
         <item name="colorOnSecondary">#FFFFFF</item>
+        <!-- Status bar and Navigation bar colors for Dark Mode -->
+        <item name="android:statusBarColor">@color/brand_orange</item>
+        <item name="android:navigationBarColor">@color/background_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

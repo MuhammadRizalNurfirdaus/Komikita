@@ -14,25 +14,29 @@
 
 ## 📱 Tentang Project
 
-**Komikita** adalah aplikasi Android native modern yang dikembangkan menggunakan **Kotlin** dan **MVVM Architecture**. Aplikasi ini dirancang untuk memberikan pengalaman membaca komik (Manga, Manhwa, Manhua) yang premium, responsif, dan nyaman di mata pengguna.
+**Komikita** adalah aplikasi Android native modern yang dikembangkan menggunakan **Kotlin** dan **MVVM Architecture**. Aplikasi ini dirancang untuk memberikan pengalaman membaca komik (Manga, Manhwa, Manhua) yang premium, responsif, dan nyaman di mata pengguna, dengan dukungan penuh untuk mode Offline.
 
-📥 **Download APK**: [Komikita-v1.0-debug.apk](releases/Komikita-v1.0-debug.apk)
-*(Klik link di atas untuk mengunduh/melihat file installer)*
+📥 **Download APK Terbaru**: [app-debug.apk](app-debug.apk) 
+*(File APK telah disiapkan di folder artifacts project ini)*
 
-Project ini telah diselesaikan 100% dan memenuhi standar pengembangan aplikasi Android profesional, termasuk penggunaan **Local Database (Room)**, **Networking (Retrofit)**, dan **State Management**.
+Project ini telah diselesaikan 100% dan memenuhi standar pengembangan aplikasi Android profesional, termasuk penggunaan **Local Database (Room)**, **Networking (Retrofit)**, dan **Advanced UI Management**.
 
 🔗 **GitHub Repository**: [https://github.com/MuhammadRizalNurfirdaus/Komikita.git](https://github.com/MuhammadRizalNurfirdaus/Komikita.git)
 
 ## 🎨 Desain & UI Reference
 
-Design System aplikasi ini mengacu pada High-Fidelity Design di Figma.
-*   **Warna Utama**: `brand_orange` (#FF6B35)
+Design System aplikasi ini mengacu pada High-Fidelity Design di Figma dengan penyesuaian UX Android:
+*   **Warna Utama**: `brand_orange` (#FF6B35) - Identitas visual yang kuat.
+*   **System Bars (Premium Look)**:
+    *   **Status Bar (Atas)**: **Dinamis (Smart Adaptation)**. 
+        *   *Light Mode*: Background Putih, Ikon Hitam.
+        *   *Dark Mode*: Background Hitam, Ikon Putih.
+        *   Memastikan jam & baterai selalu terlihat jelas di kondisi apapun.
+    *   **Navigation Bar (Bawah)**: Mengikuti tema (Putih/Hitam) dengan kontras ikon yang sesuai.
 *   **Tema**: Mendukung penuh **Light Mode** dan **Dark Mode** secara otomatis.
-*   **Navigasi**: Menggunakan Persistent Bottom Navigation Bar.
+*   **Navigasi**: Menggunakan Persistent Bottom Navigation Bar & Immersive Reader.
 
 🔗 **Figma Design File**: [Klik disini untuk melihat Desain Lengkap](https://www.figma.com/design/WhCaIxb9lESuLnuTMszFR8/Komikita?node-id=0-1&p=f&t=ZAtUXDHCXta4IAqz-0)
-
-> **Catatan Keamanan**: Aset sensitif dan konfigurasi rahasia tidak disertakan dalam link publik ini.
 
 ---
 
@@ -46,26 +50,22 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma.
 
 ### 2. Pengalaman Membaca (Reading Experience)
 *   **Chapter Reader Canggih**: Viewer gambar vertikal dengan performa tinggi (menggunakan Glide).
-*   **Navigasi Chapter**: Tombol **Next/Prev Chapter** dan **Refresh** (Reload) yang memudahkan navigasi tanpa keluar halaman.
-*   **Smart Scroll**: Layout Detail Komik yang presisi menggunakan `NestedScrollView`, mencegah scroll berlebih pada konten pendek.
-*   **Error Handling**: Tampilan "No Internet" interaktif dengan tombol **Retry/Refresh** untuk memuat ulang data.
+*   **Smart Navigation**: 
+    *   Tombol **Next/Prev** yang cerdas (hanya muncul jika chapter tersedia).
+    *   Mode Layar Penuh yang nyaman namun tetap menampilkan status bar yang terbaca.
+*   **Smart Scroll**: Layout Detail Komik yang presisi menggunakan `NestedScrollView`.
+*   **Error Handling**: Tampilan "No Internet" interaktif dengan tombol **Retry/Refresh**.
 
 ### 3. Manajemen Konten Offline (Real Offline Mode)
-*   **Real Download System (NEW)**:
-    *   **Physical File Storage**: Gambar komik benar-benar diunduh dan disimpan di penyimpanan internal perangkat (`ImageDownloader`), bukan hanya data dummy.
-    *   **Background Manager**: Download berjalan lancar di latar belakang menggunakan `DownloadManager` dengan dukungan `SupervisorJob`.
-    *   **Progress Monitoring**:
-        *   **In-App**: Kartu status download realtime di halaman Detail.
-        *   **Notification**: Notifikasi persisten di status bar yang menampilkan progress setiap chapter.
+*   **Real Download System**:
+    *   **Physical File Storage**: Gambar komik diunduh fisik dan disimpan di penyimpanan internal perangkat (`ImageDownloader`).
+    *   **Background Manager**: Download berjalan lancar di latar belakang menggunakan `DownloadManager`.
 *   **Smart Offline Reader**: Otomatis mendeteksi saat tidak ada internet dan membaca file gambar dari penyimpanan lokal dengan **Zero Loading Time**.
-*   **Organized Library**: Halaman Downloads kini menampilkan **Folder Judul Komik** yang rapi, dengan chapter yang terurut otomatis di dalamnya.
-*   **Favorit & Sinkronisasi**: Desain halaman Favorit yang konsisten dengan tema aplikasi (Brand Orange), data terikat pada akun user.
+*   **Logic Offline Cerdas**: Jika hanya 1 chapter terdownload, navigasi bar otomatis disembunyikan untuk fokus membaca.
 
 ### 4. UI/UX & Tampilan Visual
-*   **Full Dark Mode Support**:
-    *   Semua layar (Dashboard, Detail, List Chapter, Settings) otomatis beradaptasi dengan tema gelap/terang HP.
-    *   Warna teks dan background menggunakan **Semantic Colors** (`text_primary`, `background_primary`) agar selalu kontras dan terbaca.
-*   **Immersive Navigation**: Menghilangkan tombol Back (HomeAsUp) yang tidak perlu di halaman utama dan menggunakan Bottom Navigation sebagai pusat kontrol.
+*   **Full Dark Mode Support**: Semua layar beradaptasi dengan tema.
+*   **Immersive Navigation**: Menghilangkan tombol Back fisik yang tidak perlu, digantikan gesture/tombol in-app.
 *   **Loading Animation**: Progress bar kustom dengan animasi berputar yang unik.
 
 ---
@@ -74,7 +74,7 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma.
 
 *   **Language**: Kotlin 100%
 *   **Architecture**: MVVM (Model-View-ViewModel) + Repository Pattern
-*   **UI Framework**: XML Layouts (Material Design 3 Components)
+*   **UI Framework**: XML Layouts (Material Design 3) + `ConstraintLayout` & `CoordinatorLayout`
 *   **Local DB**: Android Room Database (SQLite) v3
 *   **Networking**: Retrofit 2 + OkHttp 3
 *   **Image Loader**: Glide 4.x
@@ -85,14 +85,11 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma.
 
 ## 🔒 Catatan Keamanan (Security Note)
 
-Demi menjaga keamanan kredensial dan API Key, file konfigurasi berikut **TIDAK DI-UPLOAD** ke repository ini (sudah dimasukkan ke `.gitignore`):
-
-1.  `google-services.json` (Konfigurasi Firebase & Google Sign-In)
-2.  `local.properties` (SDK Location & Sensitive Keys)
-3.  `key.properties` (Signing Keystore Credentials)
-4.  `*.jks` (KeyStore File untuk Signing Release APK)
-
-> **Penting**: Jika Anda meng-clone project ini, aplikasi tetap bisa berjalan (build success) namun fitur seperti Google Sign-In mungkin memerlukan konfigurasi `google-services.json` milik Anda sendiri.
+Demi menjaga keamanan kredensial dan API Key, file konfigurasi berikut **TIDAK DI-UPLOAD** ke repository umum:
+1.  `google-services.json`
+2.  `local.properties`
+3.  `key.properties`
+4.  `*.jks`
 
 ---
 
@@ -102,11 +99,9 @@ Demi menjaga keamanan kredensial dan API Key, file konfigurasi berikut **TIDAK D
     ```bash
     git clone https://github.com/MuhammadRizalNurfirdaus/Komikita.git
     ```
-2.  **Buka di Android Studio**: Gunakan versi terbaru (Ladybug/Jellyfish).
+2.  **Buka di Android Studio**: Versi terbaru (Ladybug/Jellyfish).
 3.  **Sync Gradle**: Biarkan Android Studio mendownload dependency.
-4.  **Run App**: Tekan tombol **Run** (`Shift+F10`) dan pilih Emulator/Device Anda.
-    *   Aplikasi akan otomatis membuat Database Lokal saat pertama kali dijalankan.
-    *   Anda bisa langsung mencoba fitur Register/Login.
+4.  **Run App**: Tekan tombol **Run** (`Shift+F10`).
 
 ---
 
