@@ -39,10 +39,22 @@ class ChapterReaderActivity : BaseActivity() {
     private var isDownloaded = false
     private var imageUrls: List<String> = emptyList()
     private var isOfflineMode = false
+    private var localPath: String? = null
     
-    // Navigation IDs
+    // Navigation IDs (from API)
     private var nextChapterId: String? = null
     private var prevChapterId: String? = null
+    
+    // Chapter list for reliable navigation (from intent)
+    private var chapterIds: Array<String>? = null
+    
+    // Offline Navigation Info
+    private var offlinePrevChapterId: String? = null
+    private var offlinePrevLocalPath: String? = null
+    private var offlinePrevChapterTitle: String? = null
+    private var offlineNextChapterId: String? = null
+    private var offlineNextLocalPath: String? = null
+    private var offlineNextChapterTitle: String? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +67,23 @@ class ChapterReaderActivity : BaseActivity() {
         chapterId = intent.getStringExtra("CHAPTER_ID")
         komikSlug = intent.getStringExtra("KOMIK_SLUG")
         komikTitle = intent.getStringExtra("KOMIK_TITLE")
+        chapterTitle = intent.getStringExtra("CHAPTER_TITLE")
         isOfflineMode = intent.getBooleanExtra("IS_OFFLINE", false)
+        localPath = intent.getStringExtra("LOCAL_PATH")
+        
+        // Get chapter list for reliable navigation (online mode)
+        chapterIds = intent.getStringArrayExtra("CHAPTER_IDS")
+        Log.d("ChapterReader", "Received chapterIds: ${chapterIds?.size ?: 0} chapters")
+        
+        // Extract offline navigation info
+        if (isOfflineMode) {
+            offlinePrevChapterId = intent.getStringExtra("OFFLINE_PREV_CHAPTER_ID")
+            offlinePrevLocalPath = intent.getStringExtra("OFFLINE_PREV_LOCAL_PATH")
+            offlinePrevChapterTitle = intent.getStringExtra("OFFLINE_PREV_CHAPTER_TITLE")
+            offlineNextChapterId = intent.getStringExtra("OFFLINE_NEXT_CHAPTER_ID")
+            offlineNextLocalPath = intent.getStringExtra("OFFLINE_NEXT_LOCAL_PATH")
+            offlineNextChapterTitle = intent.getStringExtra("OFFLINE_NEXT_CHAPTER_TITLE")
+        }
         
         setupToolbar()
         setupRecyclerView()
@@ -72,9 +100,8 @@ class ChapterReaderActivity : BaseActivity() {
             findViewById<View>(R.id.space2)?.visibility = View.GONE
             
             // Load from local storage
-            val localPath = intent.getStringExtra("LOCAL_PATH")
             if (localPath != null) {
-                loadLocalChapter(localPath)
+                loadLocalChapter(localPath!!)
             } else {
                 Toast.makeText(this, "Error: Path not found", Toast.LENGTH_SHORT).show()
                 finish()
@@ -109,11 +136,15 @@ class ChapterReaderActivity : BaseActivity() {
     }
     
     private var isNavHidden = false
+    private var shouldShowNavigation = true // Track if navigation should be visible at all
     
     private fun setupScrollListener() {
         binding.rvPages.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+                
+                // Only handle scroll hide/show if navigation should be visible
+                if (!shouldShowNavigation) return
                 
                 if (dy > 0 && !isNavHidden) {
                     // Scroll DOWN - INSTANT HIDE
@@ -138,8 +169,26 @@ class ChapterReaderActivity : BaseActivity() {
         val btnRefresh = findViewById<View>(R.id.btnRefresh)
         
         btnPrev?.setOnClickListener {
-            prevChapterId?.let { id ->
-                loadChapter(id)
+            Log.d("ChapterReader", "Prev button clicked! isOfflineMode=$isOfflineMode, prevChapterId=$prevChapterId")
+            if (isOfflineMode) {
+                // Offline mode: navigate to previous downloaded chapter
+                offlinePrevLocalPath?.let { path ->
+                    navigateToOfflineChapter(
+                        path = path,
+                        chapterId = offlinePrevChapterId,
+                        chapterTitle = offlinePrevChapterTitle
+                    )
+                }
+            } else {
+                // Online mode: load previous chapter from API
+                if (isValidChapterId(prevChapterId)) {
+                    prevChapterId?.let { id ->
+                        Log.d("ChapterReader", "Loading prev chapter: $id")
+                        loadChapter(id)
+                    }
+                } else {
+                    Log.d("ChapterReader", "Invalid prevChapterId, not navigating")
+                }
             }
         }
         
@@ -151,8 +200,26 @@ class ChapterReaderActivity : BaseActivity() {
         }
         
         btnNext?.setOnClickListener {
-            nextChapterId?.let { id ->
-                loadChapter(id)
+            Log.d("ChapterReader", "Next button clicked! isOfflineMode=$isOfflineMode, nextChapterId=$nextChapterId")
+            if (isOfflineMode) {
+                // Offline mode: navigate to next downloaded chapter
+                offlineNextLocalPath?.let { path ->
+                    navigateToOfflineChapter(
+                        path = path,
+                        chapterId = offlineNextChapterId,
+                        chapterTitle = offlineNextChapterTitle
+                    )
+                }
+            } else {
+                // Online mode: load next chapter from API
+                if (isValidChapterId(nextChapterId)) {
+                    nextChapterId?.let { id ->
+                        Log.d("ChapterReader", "Loading next chapter: $id")
+                        loadChapter(id)
+                    }
+                } else {
+                    Log.d("ChapterReader", "Invalid nextChapterId, not navigating")
+                }
             }
         }
     }
@@ -231,12 +298,15 @@ class ChapterReaderActivity : BaseActivity() {
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                Log.d("ChapterReader", "Loading chapter from API: $newChapterId")
                 val result = repository.getChapter(newChapterId)
                 
                 withContext(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
                     
                     result.onSuccess { response ->
+                        Log.d("ChapterReader", "API Response received")
+                        
                         response.data?.let { chapterData ->
                             chapterTitle = chapterData.title ?: "Chapter"
                             binding.toolbar.subtitle = chapterTitle
@@ -246,27 +316,18 @@ class ChapterReaderActivity : BaseActivity() {
                                 adapter.submitList(images)
                             }
                             
-                            // Handle navigation
-                            nextChapterId = chapterData.nextChapterId
-                            prevChapterId = chapterData.prevChapterId
-                            
-                            Log.d("ChapterReader", "===== NAVIGATION DEBUG =====")
-                            Log.d("ChapterReader", "nextChapterId from API: '$nextChapterId'")
-                            Log.d("ChapterReader", "prevChapterId from API: '$prevChapterId'")
-                            
-                            // Enable/Disable buttons based on ID availability
-                            val hasNext = isValidChapterId(nextChapterId)
-                            val hasPrev = isValidChapterId(prevChapterId)
-                            
-                            Log.d("ChapterReader", "hasNext: $hasNext, hasPrev: $hasPrev")
+                            // Determine navigation based on chapter list (priority) or API response (fallback)
+                            val (hasPrev, hasNext) = calculateNavigation(newChapterId, chapterData.prevChapterId, chapterData.nextChapterId)
                             
                             updateNavigationButtons(hasPrev, hasNext)
                         }
-                    }.onFailure {
+                    }.onFailure { error ->
+                        Log.e("ChapterReader", "Failed to load chapter", error)
                         Toast.makeText(this@ChapterReaderActivity, "Failed to load chapter", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
+                Log.e("ChapterReader", "Exception loading chapter", e)
                 withContext(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
                     binding.layoutNoInternet.root.visibility = View.VISIBLE
@@ -276,6 +337,59 @@ class ChapterReaderActivity : BaseActivity() {
         }
     }
     
+    /**
+     * Calculate navigation availability.
+     * Priority: Use chapterIds list if available (reliable).
+     * Fallback: Use API response prev/next IDs.
+     */
+    private fun calculateNavigation(currentChapterId: String, apiPrevId: String?, apiNextId: String?): Pair<Boolean, Boolean> {
+        Log.d("ChapterReader", "===== NAVIGATION CALCULATION =====")
+        Log.d("ChapterReader", "Current chapterId: $currentChapterId")
+        Log.d("ChapterReader", "chapterIds list available: ${chapterIds != null}, size: ${chapterIds?.size ?: 0}")
+        
+        // If we have the chapter list, use it for reliable navigation
+        if (chapterIds != null && chapterIds!!.isNotEmpty()) {
+            val currentIndex = chapterIds!!.indexOf(currentChapterId)
+            Log.d("ChapterReader", "Current chapter index in list: $currentIndex")
+            
+            if (currentIndex != -1) {
+                // Chapter list is ordered from newest (index 0) to oldest (last index)
+                // So: Prev = index - 1 (newer chapter), Next = index + 1 (older chapter)
+                // But typically users expect: Prev = older chapter, Next = newer chapter
+                // Let's check the order: chapters[0] = chapter 84 (newest), chapters[last] = chapter 1 (oldest)
+                
+                // For reading order (chapter 1 -> 2 -> 3...):
+                // Prev should go to lower chapter number (older in list = higher index)
+                // Next should go to higher chapter number (newer in list = lower index)
+                
+                // Actually, looking at the list: index 0 = newest chapter, so:
+                // - hasPrev = there's a chapter at index+1 (older/lower chapter number)
+                // - hasNext = there's a chapter at index-1 (newer/higher chapter number)
+                
+                val hasPrev = currentIndex < chapterIds!!.size - 1  // There's older chapter
+                val hasNext = currentIndex > 0  // There's newer chapter
+                
+                // Set the actual IDs for navigation
+                prevChapterId = if (hasPrev) chapterIds!![currentIndex + 1] else null
+                nextChapterId = if (hasNext) chapterIds!![currentIndex - 1] else null
+                
+                Log.d("ChapterReader", "Using chapterIds list - hasPrev: $hasPrev (id: $prevChapterId), hasNext: $hasNext (id: $nextChapterId)")
+                return Pair(hasPrev, hasNext)
+            }
+        }
+        
+        // Fallback to API response
+        Log.d("ChapterReader", "Fallback to API response - prevId: '$apiPrevId', nextId: '$apiNextId'")
+        prevChapterId = apiPrevId
+        nextChapterId = apiNextId
+        
+        val hasPrev = isValidChapterId(apiPrevId)
+        val hasNext = isValidChapterId(apiNextId)
+        
+        Log.d("ChapterReader", "API validation result - hasPrev: $hasPrev, hasNext: $hasNext")
+        return Pair(hasPrev, hasNext)
+    }
+    
     private fun updateNavigationButtons(enablePrev: Boolean, enableNext: Boolean) {
         val btnPrev = findViewById<Button>(R.id.btnPrev)
         val btnNext = findViewById<Button>(R.id.btnNext)
@@ -283,19 +397,23 @@ class ChapterReaderActivity : BaseActivity() {
         val space1 = findViewById<View>(R.id.space1)
         val space2 = findViewById<View>(R.id.space2)
         
+        Log.d("ChapterReader", "updateNavigationButtons: enablePrev=$enablePrev, enableNext=$enableNext, isOfflineMode=$isOfflineMode")
+        
         // Hide buttons completely if chapter not available
         btnPrev?.visibility = if (enablePrev) View.VISIBLE else View.GONE
         btnNext?.visibility = if (enableNext) View.VISIBLE else View.GONE
         
-        // Handle spaces visibility based on adjacent button visibility
-        // Space1 is between Prev and Refresh - only show if Prev is visible
-        space1?.visibility = if (enablePrev && !isOfflineMode) View.VISIBLE else View.GONE
-        // Space2 is between Refresh and Next - only show if Next is visible  
-        space2?.visibility = if (enableNext && !isOfflineMode) View.VISIBLE else View.GONE
-        
-        // In offline mode, hide refresh button
         if (isOfflineMode) {
+            // Offline mode: hide refresh button and spaces
             btnRefresh?.visibility = View.GONE
+            space1?.visibility = View.GONE
+            space2?.visibility = View.GONE
+        } else {
+            // Online mode: always show refresh button
+            btnRefresh?.visibility = View.VISIBLE
+            // Show spaces based on adjacent button visibility
+            space1?.visibility = if (enablePrev) View.VISIBLE else View.GONE
+            space2?.visibility = if (enableNext) View.VISIBLE else View.GONE
         }
         
         // Show/hide the entire navigation layout
@@ -304,31 +422,50 @@ class ChapterReaderActivity : BaseActivity() {
         val hasAnyNavButton = enablePrev || enableNext
         if (isOfflineMode) {
             // Offline mode: only show nav if there are navigation buttons
+            shouldShowNavigation = hasAnyNavButton
             binding.layoutNavigation.visibility = if (hasAnyNavButton) View.VISIBLE else View.GONE
         } else {
             // Online mode: always show navigation (has refresh button)
+            shouldShowNavigation = true
             binding.layoutNavigation.visibility = View.VISIBLE
         }
+        
+        Log.d("ChapterReader", "Navigation updated: btnPrev=${btnPrev?.visibility}, btnNext=${btnNext?.visibility}, btnRefresh=${btnRefresh?.visibility}")
     }
     
     // Helper function to check if chapter ID is valid (not null, empty, "null", "0", "undefined", etc.)
     private fun isValidChapterId(chapterId: String?): Boolean {
         Log.d("ChapterReader", "Checking chapterId: '$chapterId'")
         
+        // Check null or blank
         if (chapterId.isNullOrBlank()) {
             Log.d("ChapterReader", "Invalid: null or blank")
             return false
         }
-        if (chapterId.equals("null", ignoreCase = true)) {
-            Log.d("ChapterReader", "Invalid: 'null' string")
+        
+        val trimmed = chapterId.trim().lowercase()
+        
+        // List of invalid values that APIs commonly return for "no chapter"
+        val invalidValues = listOf(
+            "null", 
+            "undefined", 
+            "0", 
+            "false", 
+            "none", 
+            "-", 
+            "n/a",
+            "#",
+            ""
+        )
+        
+        if (trimmed in invalidValues) {
+            Log.d("ChapterReader", "Invalid: matches invalid value '$trimmed'")
             return false
         }
-        if (chapterId.equals("undefined", ignoreCase = true)) {
-            Log.d("ChapterReader", "Invalid: 'undefined' string")
-            return false
-        }
-        if (chapterId == "0") {
-            Log.d("ChapterReader", "Invalid: '0'")
+        
+        // Check if it's just whitespace or special characters
+        if (trimmed.matches(Regex("^[\\s\\-_#]+$"))) {
+            Log.d("ChapterReader", "Invalid: only special characters")
             return false
         }
         
@@ -379,6 +516,12 @@ class ChapterReaderActivity : BaseActivity() {
         binding.rvPages.visibility = View.GONE
         binding.layoutNoInternet.root.visibility = View.GONE
         
+        // Store current local path
+        this.localPath = localPath
+        
+        // Scroll to top
+        binding.rvPages.scrollToPosition(0)
+        
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Get list of image paths from local directory
@@ -392,8 +535,19 @@ class ChapterReaderActivity : BaseActivity() {
                         adapter.submitList(images)
                         binding.rvPages.visibility = View.VISIBLE
                         
-                        // In offline mode with single downloaded chapter, no prev/next available
-                        updateNavigationButtons(enablePrev = false, enableNext = false) 
+                        // Update toolbar subtitle with chapter title
+                        binding.toolbar.subtitle = chapterTitle
+                        
+                        // In offline mode: check if prev/next chapters are available
+                        val hasPrev = offlinePrevLocalPath != null
+                        val hasNext = offlineNextLocalPath != null
+                        
+                        Log.d("ChapterReader", "===== OFFLINE NAVIGATION DEBUG =====")
+                        Log.d("ChapterReader", "offlinePrevLocalPath: '$offlinePrevLocalPath'")
+                        Log.d("ChapterReader", "offlineNextLocalPath: '$offlineNextLocalPath'")
+                        Log.d("ChapterReader", "hasPrev: $hasPrev, hasNext: $hasNext")
+                        
+                        updateNavigationButtons(enablePrev = hasPrev, enableNext = hasNext)
                     } else {
                         binding.layoutNoInternet.root.visibility = View.VISIBLE
                         Toast.makeText(this@ChapterReaderActivity, "No images found", Toast.LENGTH_SHORT).show()
@@ -405,6 +559,64 @@ class ChapterReaderActivity : BaseActivity() {
                     binding.layoutNoInternet.root.visibility = View.VISIBLE
                     Toast.makeText(this@ChapterReaderActivity, "Error loading chapter: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
+    
+    private fun navigateToOfflineChapter(path: String, chapterId: String?, chapterTitle: String?) {
+        // Update current chapter info
+        this.chapterId = chapterId
+        this.chapterTitle = chapterTitle
+        this.localPath = path
+        
+        // We need to fetch the new prev/next info from database
+        // For now, start a new activity with the new chapter info
+        val intent = Intent(this, ChapterReaderActivity::class.java)
+        intent.putExtra("CHAPTER_ID", chapterId)
+        intent.putExtra("KOMIK_SLUG", komikSlug)
+        intent.putExtra("KOMIK_TITLE", komikTitle)
+        intent.putExtra("CHAPTER_TITLE", chapterTitle)
+        intent.putExtra("IS_OFFLINE", true)
+        intent.putExtra("LOCAL_PATH", path)
+        
+        // We need to get the prev/next chapter info from database
+        lifecycleScope.launch(Dispatchers.IO) {
+            val userId = sessionManager.getUserId() ?: return@launch
+            val slug = komikSlug ?: return@launch
+            
+            val downloadDao = AppDatabase.getDatabase(this@ChapterReaderActivity).downloadDao()
+            val downloads = downloadDao.getDownloadsByKomikSync(userId, slug)
+            
+            // Sort by chapter number
+            val sortedDownloads = downloads.sortedBy { download ->
+                download.chapterTitle.filter { it.isDigit() }.toIntOrNull() ?: 0
+            }
+            
+            // Find current position
+            val currentIndex = sortedDownloads.indexOfFirst { it.localPath == path }
+            
+            withContext(Dispatchers.Main) {
+                if (currentIndex != -1) {
+                    // Set prev chapter info
+                    if (currentIndex > 0) {
+                        val prevDownload = sortedDownloads[currentIndex - 1]
+                        intent.putExtra("OFFLINE_PREV_CHAPTER_ID", prevDownload.chapterId)
+                        intent.putExtra("OFFLINE_PREV_LOCAL_PATH", prevDownload.localPath)
+                        intent.putExtra("OFFLINE_PREV_CHAPTER_TITLE", prevDownload.chapterTitle)
+                    }
+                    
+                    // Set next chapter info
+                    if (currentIndex < sortedDownloads.size - 1) {
+                        val nextDownload = sortedDownloads[currentIndex + 1]
+                        intent.putExtra("OFFLINE_NEXT_CHAPTER_ID", nextDownload.chapterId)
+                        intent.putExtra("OFFLINE_NEXT_LOCAL_PATH", nextDownload.localPath)
+                        intent.putExtra("OFFLINE_NEXT_CHAPTER_TITLE", nextDownload.chapterTitle)
+                    }
+                }
+                
+                // Start new activity and finish current
+                startActivity(intent)
+                finish()
             }
         }
     }

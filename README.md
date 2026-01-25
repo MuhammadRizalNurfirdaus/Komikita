@@ -16,12 +16,38 @@
 
 **Komikita** adalah aplikasi Android native modern yang dikembangkan menggunakan **Kotlin** dan **MVVM Architecture**. Aplikasi ini dirancang untuk memberikan pengalaman membaca komik (Manga, Manhwa, Manhua) yang premium, responsif, dan nyaman di mata pengguna, dengan dukungan penuh untuk mode Offline.
 
-📥 **Download APK Terbaru**: [Komikita.apk](Komikita.apk) 
-*(File APK telah disiapkan di folder root project ini)*
+📥 **Download APK Terbaru**: [Komikita.apk](releases/Komikita.apk)  
+*(Klik link untuk download langsung - File akan tersimpan dengan nama "Komikita.apk")*
 
 Project ini telah diselesaikan 100% dan memenuhi standar pengembangan aplikasi Android profesional, termasuk penggunaan **Local Database (Room)**, **Networking (Retrofit)**, dan **Advanced UI Management**.
 
 🔗 **GitHub Repository**: [https://github.com/MuhammadRizalNurfirdaus/Komikita.git](https://github.com/MuhammadRizalNurfirdaus/Komikita.git)
+
+---
+
+## 📋 Changelog (Update Terbaru)
+
+### v1.1.0 - 25 Januari 2026
+#### 🔧 Perbaikan Bug & Crash
+- **Fix Crash SearchActivity**: Memperbaiki crash `InflateException` pada TextInputLayout dengan mengganti semua style `Widget.Material3.*` ke `Widget.MaterialComponents.*` agar kompatibel dengan tema aplikasi.
+- **Fix Crash Dark Mode**: Memperbaiki crash saat beralih antara mode terang dan gelap.
+- **Konsistensi Theme**: Menyamakan tema `values/themes.xml` dan `values-night/themes.xml` menggunakan `Theme.MaterialComponents.DayNight.NoActionBar`.
+
+#### 🎨 Perbaikan UI/UX
+- **Dark Mode Toggle Fix**: Memperbaiki posisi toggle Dark Mode agar sesuai dengan kondisi tema aktual (jika sistem dark mode, toggle di posisi ON; jika light mode, toggle di posisi OFF).
+- **Navigasi Chapter Cerdas**: 
+  - Tombol **Next** hanya muncul jika ada chapter selanjutnya.
+  - Tombol **Prev** hanya muncul jika ada chapter sebelumnya.
+  - Mode Offline: Navigasi berdasarkan chapter yang sudah didownload.
+  - Mode Online: Navigasi berdasarkan daftar chapter dari API.
+
+#### 📦 File Layout yang Diupdate
+- `activity_search.xml` - 8 style fixes
+- `activity_login.xml` - 3 style fixes  
+- `activity_register.xml` - 5 style fixes
+- `activity_setup_info.xml` - 2 style fixes
+
+---
 
 ## 🎨 Desain & UI Reference
 
@@ -52,6 +78,7 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma dengan pen
 *   **Chapter Reader Canggih**: Viewer gambar vertikal dengan performa tinggi (menggunakan Glide).
 *   **Smart Navigation**: 
     *   Tombol **Next/Prev** yang cerdas (hanya muncul jika chapter tersedia).
+    *   Navigasi berbasis daftar chapter (bukan API response) untuk akurasi lebih tinggi.
     *   Mode Layar Penuh yang nyaman namun tetap menampilkan status bar yang terbaca.
 *   **Smart Scroll**: Layout Detail Komik yang presisi menggunakan `NestedScrollView`.
 *   **Error Handling**: Tampilan "No Internet" interaktif dengan tombol **Retry/Refresh**.
@@ -61,10 +88,13 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma dengan pen
     *   **Physical File Storage**: Gambar komik diunduh fisik dan disimpan di penyimpanan internal perangkat (`ImageDownloader`).
     *   **Background Manager**: Download berjalan lancar di latar belakang menggunakan `DownloadManager`.
 *   **Smart Offline Reader**: Otomatis mendeteksi saat tidak ada internet dan membaca file gambar dari penyimpanan lokal dengan **Zero Loading Time**.
-*   **Logic Offline Cerdas**: Jika hanya 1 chapter terdownload, navigasi bar otomatis disembunyikan untuk fokus membaca.
+*   **Logic Offline Cerdas**: 
+    *   Jika hanya 1 chapter terdownload, navigasi bar otomatis disembunyikan untuk fokus membaca.
+    *   Navigasi antar chapter offline berdasarkan daftar download yang tersedia.
 
 ### 4. UI/UX & Tampilan Visual
-*   **Full Dark Mode Support**: Semua layar beradaptasi dengan tema.
+*   **Full Dark Mode Support**: Semua layar beradaptasi dengan tema sistem/preferensi user.
+*   **Dark Mode Toggle Akurat**: Toggle selalu menunjukkan posisi sesuai kondisi tema aktual.
 *   **Immersive Navigation**: Menghilangkan tombol Back fisik yang tidak perlu, digantikan gesture/tombol in-app.
 *   **Loading Animation**: Progress bar kustom dengan animasi berputar yang unik.
 
@@ -74,12 +104,45 @@ Design System aplikasi ini mengacu pada High-Fidelity Design di Figma dengan pen
 
 *   **Language**: Kotlin 100%
 *   **Architecture**: MVVM (Model-View-ViewModel) + Repository Pattern
-*   **UI Framework**: XML Layouts (Material Design 3) + `ConstraintLayout` & `CoordinatorLayout`
+*   **UI Framework**: XML Layouts (Material Components) + `ConstraintLayout` & `CoordinatorLayout`
+*   **Theme**: `Theme.MaterialComponents.DayNight.NoActionBar` (Dark/Light Mode Support)
 *   **Local DB**: Android Room Database (SQLite) v3
 *   **Networking**: Retrofit 2 + OkHttp 3
 *   **Image Loader**: Glide 4.x
 *   **Concurrency**: Kotlin Coroutines & Flow
 *   **Build System**: Gradle Kotlin DSL
+
+---
+
+## 📂 Struktur Project
+
+```
+app/
+├── src/main/
+│   ├── java/com/example/komikita/
+│   │   ├── data/
+│   │   │   ├── api/          # Retrofit API Service
+│   │   │   ├── db/           # Room Database, DAOs, Entities
+│   │   │   ├── model/        # Data Classes (Response Models)
+│   │   │   └── repository/   # Repository Pattern Implementation
+│   │   ├── ui/
+│   │   │   ├── base/         # BaseActivity (Theme Management)
+│   │   │   ├── dashboard/    # Home Screen
+│   │   │   ├── detail/       # Komik Detail Screen
+│   │   │   ├── downloads/    # Download Manager & Offline Reader
+│   │   │   ├── favorites/    # Favorites Screen
+│   │   │   ├── profile/      # User Profile & Settings
+│   │   │   ├── reader/       # Chapter Reader Activity
+│   │   │   ├── search/       # Search & Filter Screen
+│   │   │   └── auth/         # Login & Register Screens
+│   │   └── utils/            # Helper Classes
+│   └── res/
+│       ├── layout/           # XML Layouts
+│       ├── values/           # Light Theme, Colors, Strings
+│       └── values-night/     # Dark Theme Configuration
+└── releases/
+    └── Komikita.apk          # Ready-to-install APK
+```
 
 ---
 
@@ -105,4 +168,15 @@ Demi menjaga keamanan kredensial dan API Key, file konfigurasi berikut **TIDAK D
 
 ---
 
-*Dibuat dengan ❤️ untuk memenuhi tugas UAS pemrograman.*
+## 📱 Instalasi APK
+
+Untuk menginstall langsung tanpa build:
+1. Download [Komikita.apk](releases/Komikita.apk)
+2. Enable "Install from Unknown Sources" di pengaturan Android
+3. Buka file APK dan install
+4. Enjoy reading! 📚
+
+---
+
+*Dibuat dengan ❤️ untuk memenuhi tugas UAS pemrograman.*  
+*Terakhir diupdate: 25 Januari 2026*

@@ -41,11 +41,16 @@ class ChapterListBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Create list of chapter IDs for navigation
+        val chapterIds = chapters.map { it.id }.toTypedArray()
+
         val adapter = ChapterAdapter { chapterId ->
             val intent = Intent(requireContext(), ChapterReaderActivity::class.java)
             intent.putExtra("CHAPTER_ID", chapterId)
             intent.putExtra("KOMIK_SLUG", komikId)
             intent.putExtra("KOMIK_TITLE", komikTitle)
+            // Pass chapter list for proper navigation
+            intent.putExtra("CHAPTER_IDS", chapterIds)
             startActivity(intent)
             dismiss()
         }

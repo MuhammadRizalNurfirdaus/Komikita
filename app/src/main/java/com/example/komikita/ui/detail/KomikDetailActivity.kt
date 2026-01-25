@@ -239,11 +239,16 @@ class KomikDetailActivity : BaseActivity() {
                             
                             // Setup chapters
                             detail.chapters?.let { chapters ->
+                                // Create list of chapter IDs for navigation
+                                val chapterIds = chapters.map { it.id }.toTypedArray()
+                                
                                 val adapter = ChapterAdapter { chapterId ->
                                     val intent = Intent(this@KomikDetailActivity, ChapterReaderActivity::class.java)
                                     intent.putExtra("CHAPTER_ID", chapterId)
                                     intent.putExtra("KOMIK_SLUG", komikId)
                                     intent.putExtra("KOMIK_TITLE", detail.title ?: "Unknown")
+                                    // Pass chapter list for proper navigation
+                                    intent.putExtra("CHAPTER_IDS", chapterIds)
                                     startActivity(intent)
                                 }
                                 binding.rvChapters.layoutManager = LinearLayoutManager(this@KomikDetailActivity)
@@ -253,7 +258,7 @@ class KomikDetailActivity : BaseActivity() {
                                 val displayChapters = chapters.take(5)
                                 adapter.submitList(displayChapters)
                                 
-                                // Setup See All button
+                                // Setup See All button - also pass chapter IDs
                                 binding.btnSeeAllChapters.setOnClickListener {
                                     val bottomSheet = ChapterListBottomSheet.newInstance(
                                         chapters, 

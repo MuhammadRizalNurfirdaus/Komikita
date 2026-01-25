@@ -15,9 +15,13 @@ import java.util.Date
 import java.util.Locale
 
 class DownloadAdapter(
-    private val onItemClick: (DownloadEntity) -> Unit,
+    private val onItemClick: (download: DownloadEntity, position: Int, totalCount: Int) -> Unit,
     private val onDeleteClick: (DownloadEntity) -> Unit
 ) : ListAdapter<DownloadEntity, DownloadAdapter.DownloadViewHolder>(DownloadDiffCallback()) {
+    
+    fun getItemAtPosition(position: Int): DownloadEntity? {
+        return if (position in 0 until itemCount) getItem(position) else null
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DownloadViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -45,7 +49,7 @@ class DownloadAdapter(
             tvDownloadDate.text = "Downloaded: ${dateFormat.format(date)}"
 
             itemView.setOnClickListener {
-                onItemClick(download)
+                onItemClick(download, adapterPosition, itemCount)
             }
 
             btnDelete.setOnClickListener {

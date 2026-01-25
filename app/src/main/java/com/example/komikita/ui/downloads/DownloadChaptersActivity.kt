@@ -25,6 +25,7 @@ class DownloadChaptersActivity : AppCompatActivity() {
     private lateinit var adapter: DownloadAdapter
     private var komikSlug: String? = null
     private var komikTitle: String? = null
+    private var downloadsList: List<DownloadEntity> = emptyList()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +50,39 @@ class DownloadChaptersActivity : AppCompatActivity() {
     
     private fun setupRecyclerView() {
         adapter = DownloadAdapter(
-            onItemClick = { download ->
-                // Open chapter reader in offline mode
+            onItemClick = { download, position, totalCount ->
+                // Open chapter reader in offline mode with navigation info
                 val intent = Intent(this, ChapterReaderActivity::class.java)
                 intent.putExtra("CHAPTER_ID", download.chapterId)
                 intent.putExtra("KOMIK_SLUG", download.komikSlug)
                 intent.putExtra("KOMIK_TITLE", download.komikTitle)
+                intent.putExtra("CHAPTER_TITLE", download.chapterTitle)
                 intent.putExtra("IS_OFFLINE", true)
                 intent.putExtra("LOCAL_PATH", download.localPath)
+                
+                // Pass prev/next chapter info for offline navigation
+                // Position 0 = first chapter (no prev), position totalCount-1 = last (no next)
+                if (position > 0 && downloadsList.isNotEmpty()) {
+                    val prevDownload = downloadsList.getOrNull(position - 1)
+                    prevDownload?.let {
+                        intent.putExtra("OFFLINE_PREV_CHAPTER_ID", it.chapterId)
+                        intent.putExtra("OFFLINE_PREV_LOCAL_PATH", it.localPath)
+                        intent.putExtra("OFFLINE_PREV_CHAPTER_TITLE", it.chapterTitle)
+                    }
+                }
+                if (position < totalCount - 1 && downloadsList.isNotEmpty()) {
+                    val nextDownload = downloadsList.getOrNull(position + 1)
+                    nextDownload?.let {
+                        intent.putExtra("OFFLINE_NEXT_CHAPTER_ID", it.chapterId)
+                        intent.putExtra("OFFLINE_NEXT_LOCAL_PATH", it.localPath)
+                        intent.putExtra("OFFLINE_NEXT_CHAPTER_TITLE", it.chapterTitle)
+                    }
+                }
+                
+                // Pass all downloaded chapters info for dynamic navigation
+                intent.putExtra("OFFLINE_CURRENT_POSITION", position)
+                intent.putExtra("OFFLINE_TOTAL_CHAPTERS", totalCount)
+                
                 startActivity(intent)
             },
             onDeleteClick = { download ->
@@ -86,6 +112,9 @@ class DownloadChaptersActivity : AppCompatActivity() {
                         // Extract number from chapter title
                         download.chapterTitle.filter { it.isDigit() }.toIntOrNull() ?: 0
                     }
+                    
+                    // Store the sorted list for navigation reference
+                    downloadsList = sortedDownloads
                     
                     if (sortedDownloads.isEmpty()) {
                         showEmptyState(true)

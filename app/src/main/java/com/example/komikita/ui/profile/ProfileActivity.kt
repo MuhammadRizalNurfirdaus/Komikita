@@ -104,26 +104,16 @@ class ProfileActivity : BaseActivity() {
     private fun setupDarkMode() {
         val sharedPreferences = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
         
+        // Cek kondisi tema saat ini (bukan preference, tapi kondisi aktual)
+        val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        val isCurrentlyDark = currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        
+        // Set switch sesuai kondisi tema aktual saat ini
+        binding.switchDarkMode.isChecked = isCurrentlyDark
+        
+        // Jika preference belum ada, simpan kondisi saat ini sebagai default
         if (!sharedPreferences.contains("dark_mode")) {
-            // First time launch or preference not set, check system
-            val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
-            val isSystemDark = currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
-            
-            // Save system preference as default
-            sharedPreferences.edit().putBoolean("dark_mode", isSystemDark).apply()
-            
-            // Apply it
-            val mode = if (isSystemDark) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-            AppCompatDelegate.setDefaultNightMode(mode)
-            binding.switchDarkMode.isChecked = isSystemDark
-        } else {
-            // Use existing preference
-            val isDarkMode = sharedPreferences.getBoolean("dark_mode", false)
-            binding.switchDarkMode.isChecked = isDarkMode
+            sharedPreferences.edit().putBoolean("dark_mode", isCurrentlyDark).apply()
         }
     }
     
