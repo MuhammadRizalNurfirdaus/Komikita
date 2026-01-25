@@ -15,7 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MangaListActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class MangaListActivity : BaseActivity() {
     
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var repository: KomikRepository

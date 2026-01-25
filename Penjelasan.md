@@ -98,9 +98,11 @@ Selama pengembangan, beberapa tantangan teknis ditemukan dan berhasil diselesaik
 
 ### B. Masalah Navigasi Logic
 *   **Masalah**: Tombol Next/Prev muncul padahal tidak ada chapter selanjutnya.
-*   **Solusi**: Menambahkan validasi ketat di `ChapterReaderActivity`. Mengecek nilai `nextChapterId` dan `prevChapterId` dari API.
-
----
+    *   **Solusi**: Menambahkan validasi ketat di `ChapterReaderActivity`. Mengecek nilai `nextChapterId` dan `prevChapterId` dari API.
+    
+### C. Mengatasi Crash "InflateException" (Force Close)
+*   **Masalah**: Aplikasi crash saat membuka halaman Detail/Reader karena ketidakcocokan antara komponen `MaterialToolbar` dengan tema `AppCompat`.
+*   **Solusi**: Migrasi tema aplikasi secara menyeluruh ke `Theme.MaterialComponents.DayNight.NoActionBar` dan menstandarisasi seluruh Activity menggunakan `BaseActivity`.
 
 ## 7. Langkah Instalasi & Build 📝
 1.  Clone repo.

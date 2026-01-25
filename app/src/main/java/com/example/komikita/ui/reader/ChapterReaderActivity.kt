@@ -24,7 +24,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ChapterReaderActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class ChapterReaderActivity : BaseActivity() {
     
     private lateinit var binding: ActivityChapterReaderBinding
     private lateinit var repository: KomikRepository

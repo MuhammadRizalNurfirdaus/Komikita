@@ -25,7 +25,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class KomikDetailActivity : AppCompatActivity() {
+import com.example.komikita.ui.base.BaseActivity
+
+class KomikDetailActivity : BaseActivity() {
     
     private lateinit var binding: ActivityKomikDetailBinding
     private lateinit var repository: KomikRepository
