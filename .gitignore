@@ -22,3 +22,7 @@ key.properties
 
 # Build Folder
 app/build/
+
+# Konfigurasi Lokal & Token Rahasia
+opencode.json
+.env
