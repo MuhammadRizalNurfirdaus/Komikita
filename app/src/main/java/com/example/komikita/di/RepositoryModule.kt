@@ -1,10 +1,12 @@
 package com.example.komikita.di
 
 import com.example.komikita.data.repository.CustomComicRepositoryImpl
+import com.example.komikita.data.repository.FavoriteRepositoryImpl
 import com.example.komikita.data.repository.HistoryRepositoryImpl
 import com.example.komikita.data.repository.KomikRepositoryImpl
 import com.example.komikita.data.repository.UserRepositoryImpl
 import com.example.komikita.domain.repository.CustomComicRepository
+import com.example.komikita.domain.repository.FavoriteRepository
 import com.example.komikita.domain.repository.HistoryRepository
 import com.example.komikita.domain.repository.KomikRepository
 import com.example.komikita.domain.repository.UserRepository
@@ -59,4 +61,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindHistoryRepository(impl: HistoryRepositoryImpl): HistoryRepository
+
+    /**
+     * Bind FavoriteRepository interface ke FavoriteRepositoryImpl.
+     * Untuk bookmark komik (disimpan di Room DB lokal).
+     */
+    @Binds
+    @Singleton
+    abstract fun bindFavoriteRepository(impl: FavoriteRepositoryImpl): FavoriteRepository
 }

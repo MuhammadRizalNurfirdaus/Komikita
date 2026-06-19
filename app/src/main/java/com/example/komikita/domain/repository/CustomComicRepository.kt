@@ -44,3 +44,38 @@ interface HistoryRepository {
     /** Hapus semua riwayat user */
     suspend fun clearHistory(userId: String)
 }
+
+/**
+ * Domain model untuk item Favorit (bookmark komik).
+ * Disimpan di Room DB lokal untuk akses cepat.
+ */
+data class FavoriteItem(
+    val slug: String,
+    val title: String,
+    val poster: String?,
+    val type: String?,
+    val source: com.example.komikita.domain.model.KomikSource,
+    val addedAt: Long
+)
+
+/**
+ * Interface Repository untuk manajemen Favorit (bookmark komik).
+ * Data favorit disimpan di Room DB lokal.
+ */
+interface FavoriteRepository {
+
+    /** Observasi semua favorit user tertentu */
+    fun observeFavorites(userId: String): Flow<List<FavoriteItem>>
+
+    /** Cek apakah komik tertentu ada di favorit */
+    suspend fun isFavorite(slug: String, userId: String): Boolean
+
+    /** Tambahkan komik ke favorit */
+    suspend fun addFavorite(item: FavoriteItem, userId: String)
+
+    /** Hapus komik dari favorit */
+    suspend fun removeFavorite(slug: String, userId: String)
+
+    /** Toggle favorit (tambah jika belum, hapus jika sudah) */
+    suspend fun toggleFavorite(item: FavoriteItem, userId: String): Boolean
+}
