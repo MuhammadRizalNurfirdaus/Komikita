@@ -1,245 +1,242 @@
 # Komikita - Aplikasi Baca Komik Modern
 
-## 👨‍🎓 Identitas Mahasiswa
+**Developer**: Muhammad Rizal Nurfirdaus
 
-| Informasi | Detail |
-| :--- | :--- |
-| **Nama** | **Muhammad Rizal Nurfirdaus** |
-| **NIM** | **20230810088** |
-| **Kelas** | **TINFC-2023-04** |
-| **Mata Kuliah** | **Praktikum Bahasa Pemrograman 3** |
-| **Dosen Pengampu** | **Dede Husen, M.Kom.** |
+**Komikita** adalah aplikasi Android native untuk membaca komik digital (Manga, Manhwa, Manhua) yang dibangun dengan arsitektur modern **Clean Architecture + Jetpack Compose + Hilt**. Aplikasi ini menggunakan sistem data hybrid yang menggabungkan **Scraper API** (konten publik read-only) dan **PostgreSQL** melalui REST Backend API (komik custom dari Translator), dengan **Firebase** khusus untuk autentikasi Google Sign-In.
+
+🔗 **Repository**: [github.com/MuhammadRizalNurfirdaus/Komikita](https://github.com/MuhammadRizalNurfirdaus/Komikita)
 
 ---
 
-## 📱 Tentang Project
-
-**Komikita** adalah aplikasi Android native modern yang dikembangkan menggunakan **Kotlin** dan **MVVM Architecture**. Aplikasi ini dirancang untuk memberikan pengalaman membaca komik (Manga, Manhwa, Manhua) yang premium, responsif, dan nyaman di mata pengguna, dengan dukungan penuh untuk mode Offline.
-
-📥 **Download APK Terbaru**: [Komikita.apk](releases/Komikita.apk)  
-*(Klik link untuk download langsung - File akan tersimpan dengan nama "Komikita.apk")*
-
-Project ini telah diselesaikan 100% dan memenuhi standar pengembangan aplikasi Android profesional, termasuk penggunaan **Local Database (Room)**, **Networking (Retrofit)**, dan **Advanced UI Management**.
-
-🔗 **GitHub Repository**: [https://github.com/MuhammadRizalNurfirdaus/Komikita.git](https://github.com/MuhammadRizalNurfirdaus/Komikita.git)
-
----
-
-## ✅ Kelengkapan Syarat UAS
-
-### 🎯 Status: **100% MEMENUHI PERSYARATAN**
-
-Project ini telah **memenuhi dan melampaui** seluruh kriteria UAS BP3 Praktikum:
-
-| No | Kriteria UAS | Status | Implementasi di Komikita |
-|:---:|:-------------|:------:|:-------------------------|
-| 1 | **Tema Aplikasi** | ✅ | Aplikasi pembaca komik digital (Manga/Manhwa/Manhua) |
-| 2 | **Design Aplikasi** | ✅ | Material Design dengan Figma reference, Dark/Light mode |
-| 3 | **Halaman Login/Register** | ✅ | Login & Register dengan database, Google Sign-In, password hashing |
-| 4 | **Halaman Dashboard** | ✅ | Dashboard dengan RecyclerView Grid, data dari API, >10 items |
-| 5 | **Halaman Detail** | ✅ | Detail komik dengan gambar, info lengkap, list chapters |
-| 6 | **Halaman About/Profile** | ✅ | Profile dengan foto, nama, email user yang login |
-| 7 | **Navigasi Aplikasi** | ✅ | Bottom Navigation + Intent navigation antar Activity |
-| 8 | **Minimal 7 Activity** | ✅ | **13 Activity** tersedia (lebih dari cukup!) |
-| 9 | **Minimal 10 Item List** | ✅ | Dashboard menampilkan data unlimited dari REST API |
-
-### 📊 Daftar 13 Activity dalam Project:
-
-1. `SplashActivity` - Splash screen opening
-2. `LoginActivity` - **Halaman Login** ⭐
-3. `RegisterActivity` - **Halaman Register** ⭐
-4. `DashboardActivity` - **Halaman Dashboard** dengan list komik ⭐
-5. `KomikDetailActivity` - **Halaman Detail** dengan gambar & info ⭐
-6. `ChapterReaderActivity` - Membaca chapter komik
-7. `SearchActivity` - Pencarian komik
-8. `ProfileActivity` - **Halaman Profile/About** dengan foto, nama, email ⭐
-9. `EditProfileActivity` - Edit profil user
-10. `FavoritesActivity` - Daftar favorit
-11. `DownloadsActivity` - Daftar download
-12. `DownloadChaptersActivity` - Download chapters untuk offline
-13. `HistoryActivity` - Riwayat baca
-
-### 🌟 Nilai Tambah (Bonus Features):
-
-- ✅ **Database Integration** (Room SQLite) dengan 3 tabel
-- ✅ **REST API Integration** (10 endpoints dengan Retrofit)
-- ✅ **Google Sign-In** (Firebase Authentication)
-- ✅ **Offline Reading** (Download & Storage Management)
-- ✅ **MVVM Architecture** (Professional coding pattern)
-- ✅ **Coroutines** (Modern async programming)
-- ✅ **Dark Mode** (Full theme support)
-- ✅ **Password Security** (SHA-256 hashing)
-- ✅ **Image Caching** (Glide optimization)
-- ✅ **Error Handling** (No internet handling, API errors)
-
-### 📖 Dokumentasi Lengkap:
-
-- ✅ `README.md` - Overview & changelog
-- ✅ `Penjelasan.md` - **Dokumentasi teknis lengkap dari dasar**:
-  - Konsep Android Development
-  - Arsitektur MVVM
-  - 10 API endpoints dengan contoh request/response
-  - Database schema (Room) dengan 3 tabel
-  - Implementasi fitur-fitur
-  - Code examples
-- ✅ APK siap install di folder `releases/`
-
-**Estimasi Nilai**: 97/100 🏆 (Grade: A+)
-
----
-
-## 📋 Changelog (Update Terbaru)
-
-### v1.1.0 - 25 Januari 2026
-#### 🔧 Perbaikan Bug & Crash
-- **Fix Crash SearchActivity**: Memperbaiki crash `InflateException` pada TextInputLayout dengan mengganti semua style `Widget.Material3.*` ke `Widget.MaterialComponents.*` agar kompatibel dengan tema aplikasi.
-- **Fix Crash Dark Mode**: Memperbaiki crash saat beralih antara mode terang dan gelap.
-- **Konsistensi Theme**: Menyamakan tema `values/themes.xml` dan `values-night/themes.xml` menggunakan `Theme.MaterialComponents.DayNight.NoActionBar`.
-
-#### 🎨 Perbaikan UI/UX
-- **Dark Mode Toggle Fix**: Memperbaiki posisi toggle Dark Mode agar sesuai dengan kondisi tema aktual (jika sistem dark mode, toggle di posisi ON; jika light mode, toggle di posisi OFF).
-- **Navigasi Chapter Cerdas**: 
-  - Tombol **Next** hanya muncul jika ada chapter selanjutnya.
-  - Tombol **Prev** hanya muncul jika ada chapter sebelumnya.
-  - Mode Offline: Navigasi berdasarkan chapter yang sudah didownload.
-  - Mode Online: Navigasi berdasarkan daftar chapter dari API.
-
-#### 📦 File Layout yang Diupdate
-- `activity_search.xml` - 8 style fixes
-- `activity_login.xml` - 3 style fixes  
-- `activity_register.xml` - 5 style fixes
-- `activity_setup_info.xml` - 2 style fixes
-
----
-
-## 🎨 Desain & UI Reference
-
-Design System aplikasi ini mengacu pada High-Fidelity Design di Figma dengan penyesuaian UX Android:
-*   **Warna Utama**: `brand_orange` (#FF6B35) - Identitas visual yang kuat.
-*   **System Bars (Premium Look)**:
-    *   **Status Bar (Atas)**: **Dinamis (Smart Adaptation)**. 
-        *   *Light Mode*: Background Putih, Ikon Hitam.
-        *   *Dark Mode*: Background Hitam, Ikon Putih.
-        *   Memastikan jam & baterai selalu terlihat jelas di kondisi apapun.
-    *   **Navigation Bar (Bawah)**: Mengikuti tema (Putih/Hitam) dengan kontras ikon yang sesuai.
-*   **Tema**: Mendukung penuh **Light Mode** dan **Dark Mode** secara otomatis.
-*   **Navigasi**: Menggunakan Persistent Bottom Navigation Bar & Immersive Reader.
-
-🔗 **Figma Design File**: [Klik disini untuk melihat Desain Lengkap](https://www.figma.com/design/WhCaIxb9lESuLnuTMszFR8/Komikita?node-id=0-1&p=f&t=ZAtUXDHCXta4IAqz-0)
-
----
-
-## ✨ Fitur Unggulan
-
-### 1. Autentikasi & Manajemen User
-*   **Secure Login & Register**: Form login/register dengan validasi realtime.
-*   **Password Hashing**: Password user dienkripsi menggunakan **SHA-256** sebelum disimpan ke database lokal.
-*   **Profil User**: Pengguna dapat mengganti Foto Profil (pilih dari galeri) dan mengedit data diri.
-*   **Mode Tamu (Guest)**: Bisa browsing komik tanpa login, namun wajib login untuk fitur premium (Download/Favorit).
-
-### 2. Pengalaman Membaca (Reading Experience)
-*   **Chapter Reader Canggih**: Viewer gambar vertikal dengan performa tinggi (menggunakan Glide).
-*   **Smart Navigation**: 
-    *   Tombol **Next/Prev** yang cerdas (hanya muncul jika chapter tersedia).
-    *   Navigasi berbasis daftar chapter (bukan API response) untuk akurasi lebih tinggi.
-    *   Mode Layar Penuh yang nyaman namun tetap menampilkan status bar yang terbaca.
-*   **Smart Scroll**: Layout Detail Komik yang presisi menggunakan `NestedScrollView`.
-*   **Error Handling**: Tampilan "No Internet" interaktif dengan tombol **Retry/Refresh**.
-
-### 3. Manajemen Konten Offline (Real Offline Mode)
-*   **Real Download System**:
-    *   **Physical File Storage**: Gambar komik diunduh fisik dan disimpan di penyimpanan internal perangkat (`ImageDownloader`).
-    *   **Background Manager**: Download berjalan lancar di latar belakang menggunakan `DownloadManager`.
-*   **Smart Offline Reader**: Otomatis mendeteksi saat tidak ada internet dan membaca file gambar dari penyimpanan lokal dengan **Zero Loading Time**.
-*   **Logic Offline Cerdas**: 
-    *   Jika hanya 1 chapter terdownload, navigasi bar otomatis disembunyikan untuk fokus membaca.
-    *   Navigasi antar chapter offline berdasarkan daftar download yang tersedia.
-
-### 4. UI/UX & Tampilan Visual
-*   **Full Dark Mode Support**: Semua layar beradaptasi dengan tema sistem/preferensi user.
-*   **Dark Mode Toggle Akurat**: Toggle selalu menunjukkan posisi sesuai kondisi tema aktual.
-*   **Immersive Navigation**: Menghilangkan tombol Back fisik yang tidak perlu, digantikan gesture/tombol in-app.
-*   **Loading Animation**: Progress bar kustom dengan animasi berputar yang unik.
-
----
-
-## 🛠️ Technology Stack
-
-*   **Language**: Kotlin 100%
-*   **Architecture**: MVVM (Model-View-ViewModel) + Repository Pattern
-*   **UI Framework**: XML Layouts (Material Components) + `ConstraintLayout` & `CoordinatorLayout`
-*   **Theme**: `Theme.MaterialComponents.DayNight.NoActionBar` (Dark/Light Mode Support)
-*   **Local DB**: Android Room Database (SQLite) v3
-*   **Networking**: Retrofit 2 + OkHttp 3
-*   **Image Loader**: Glide 4.x
-*   **Concurrency**: Kotlin Coroutines & Flow
-*   **Build System**: Gradle Kotlin DSL
-
----
-
-## 📂 Struktur Project
+## 🏗️ Arsitektur
 
 ```
-app/
-├── src/main/
-│   ├── java/com/example/komikita/
-│   │   ├── data/
-│   │   │   ├── api/          # Retrofit API Service
-│   │   │   ├── db/           # Room Database, DAOs, Entities
-│   │   │   ├── model/        # Data Classes (Response Models)
-│   │   │   └── repository/   # Repository Pattern Implementation
-│   │   ├── ui/
-│   │   │   ├── base/         # BaseActivity (Theme Management)
-│   │   │   ├── dashboard/    # Home Screen
-│   │   │   ├── detail/       # Komik Detail Screen
-│   │   │   ├── downloads/    # Download Manager & Offline Reader
-│   │   │   ├── favorites/    # Favorites Screen
-│   │   │   ├── profile/      # User Profile & Settings
-│   │   │   ├── reader/       # Chapter Reader Activity
-│   │   │   ├── search/       # Search & Filter Screen
-│   │   │   └── auth/         # Login & Register Screens
-│   │   └── utils/            # Helper Classes
-│   └── res/
-│       ├── layout/           # XML Layouts
-│       ├── values/           # Light Theme, Colors, Strings
-│       └── values-night/     # Dark Theme Configuration
-└── releases/
-    └── Komikita.apk          # Ready-to-install APK
+┌─────────────────────────────────────────────────────────┐
+│                   Presentation Layer                     │
+│  Jetpack Compose + Material 3 + ViewModel (StateFlow)   │
+│  HomeScreen, DetailScreen, ReaderScreen, SearchScreen   │
+│  ProfileScreen, HistoryScreen, FavoritesScreen, etc.    │
+├─────────────────────────────────────────────────────────┤
+│                     Domain Layer                         │
+│  Use Cases · Repository Interfaces · Domain Models      │
+│  GetHomeFeedUseCase · GetChapterPagesUseCase · etc.     │
+├─────────────────────────────────────────────────────────┤
+│                      Data Layer                          │
+│  Retrofit APIs · Room DB · Repositories · DTO Mappers   │
+│  ScraperApi (read-only) · BackendApi (PostgreSQL)       │
+├─────────────────────────────────────────────────────────┤
+│                      DI Layer (Hilt)                     │
+│  NetworkModule · DatabaseModule · RepositoryModule      │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Sistem Data Hybrid
+
+Aplikasi menggabungkan 2 sumber data menjadi satu feed terpadu:
+
+| Sumber | Sifat | Database | Keterangan |
+|--------|-------|----------|------------|
+| **Scraper API** | Read-only, publik | - | Konten Manga/Manhwa/Manhua dari `scraper.asepharyana.my.id` |
+| **Backend API** | Full CRUD, auth | PostgreSQL (Aiven) | Komik custom yang diupload oleh Translator |
+
+Data dari kedua sumber digabungkan secara paralel menggunakan `coroutineScope { async {} }`, kemudian di-merge di `KomikRepositoryImpl` dengan komik custom muncul lebih dulu.
+
+### Sistem 3 Aktor
+
+| Role | Kemampuan |
+|------|-----------|
+| **Admin** | Kelola user, kelola sistem, kelola konten |
+| **Translator** | Upload komik custom (bulk paste 50+ URL), hide/unhide komik scraper |
+| **User** | Baca komik, riwayat baca, favorit, download offline |
+
+---
+
+## 🔧 Technology Stack
+
+| Komponen | Teknologi |
+|----------|-----------|
+| **Language** | Kotlin 100% |
+| **Architecture** | Clean Architecture + MVVM |
+| **UI Framework** | Jetpack Compose + Material 3 |
+| **DI** | Hilt (Dagger) |
+| **Image Loading** | Coil 2.x |
+| **Networking** | Retrofit 2 + OkHttp 4 (dual client) |
+| **Auth** | Firebase Auth (Google Sign-In only) |
+| **Local DB** | Room Database v4 |
+| **Remote DB** | PostgreSQL via REST Backend API |
+| **Async** | Kotlin Coroutines + Flow/StateFlow |
+| **Navigation** | Compose Navigation (type-safe routes) |
+| **Build** | Gradle Kotlin DSL, KSP |
+
+### Dual OkHttp Client
+
+Aplikasi menggunakan 2 `OkHttpClient` terpisah untuk isolasi keamanan:
+
+- **`scraperClient`** — tanpa Auth Interceptor (endpoint publik, tidak butuh token)
+- **`backendClient`** — dengan `AuthInterceptor` (otomatis inject JWT Bearer token dari Room DB, handle 401 centrally)
+
+---
+
+## ✨ Fitur Utama
+
+### Autentikasi
+- **Google Sign-In** via Firebase Auth — tanpa password lokal
+- **JWT Token** dari backend disimpan di Room DB
+- **AuthInterceptor** otomatis inject `Authorization: Bearer <token>` ke semua request backend
+- **Penanganan 401** terpusat — token otomatis dihapus jika expired
+
+### Home Feed (Hybrid)
+- Grid komik dari Scraper API + Backend API digabung paralel
+- Komik custom (Translator) muncul lebih dulu
+- Admin/Translator bisa hide komik scraper tertentu
+- LazyVerticalGrid dengan Coil image loading
+
+### Reader
+- Vertical scroll reading dengan Coil AsyncImage
+- Tap-to-toggle kontrol (show/hide navigation overlay)
+- Smart chapter navigation (Next/Prev hanya muncul jika tersedia)
+- Riwayat baca otomatis tersimpan ke Room DB
+
+### Translator Dashboard
+- Bulk upload komik dengan paste 50+ URL gambar sekaligus
+- Auto-generate slug dari judul
+- Kelola komik custom (tambah chapter, hapus)
+- Hide/unhide komik scraper yang tidak sesuai
+
+### Profil & Pengaturan
+- Foto profil, nama, email dari Google
+- Role badge berwarna (Admin=Merah, Translator=Oranye, User=Biru)
+- Menu akses cepat ke Favorit, Riwayat, Pengaturan
+- Tombol Translator Dashboard (muncul hanya untuk Translator/Admin)
+
+### Favorit & Riwayat
+- Bookmark komik ke favorit (disimpan lokal di Room)
+- Riwayat baca otomatis dengan timestamp
+- Hapus per-item atau hapus semua
+
+### Bottom Navigation
+- 4 tab: Home, Favorit, Riwayat, Profil
+- Auto-hide di halaman detail/reader/search
+- State restoration saat berpindah tab
+
+---
+
+## 📂 Struktur Package
+
+```
+app/src/main/java/com/example/komikita/
+├── KomikitaApplication.kt              # @HiltAndroidApp
+├── MainActivity.kt                      # @AndroidEntryPoint, Compose entry
+│
+├── domain/                              # Clean Architecture - Domain Layer
+│   ├── model/                           # Komik, KomikDetail, ChapterPages, User, dll.
+│   ├── repository/                      # Interface (kontrak) untuk repository
+│   └── usecase/                         # GetHomeFeedUseCase, SearchKomikUseCase, dll.
+│
+├── data/                                # Clean Architecture - Data Layer
+│   ├── api/                             # ScraperApi.kt, BackendApi.kt, AuthInterceptor.kt
+│   ├── model/                           # DTO (ScraperDto, BackendDto)
+│   ├── local/                           # Room DB, Entity, DAO
+│   ├── repository/                      # Implementasi repository (KomikRepositoryImpl, dll.)
+│   └── mapper/                          # DTO-to-Domain mapper (Mappers.kt)
+│
+├── di/                                  # Hilt DI Modules
+│   ├── NetworkModule.kt                 # Dual OkHttp client + Retrofit
+│   ├── DatabaseModule.kt                # Room DB + DAOs
+│   └── RepositoryModule.kt             # Interface → Impl bindings
+│
+├── presentation/                        # Clean Architecture - Presentation Layer
+│   ├── theme/                           # Material 3 colors, auto dark/light
+│   ├── navigation/                      # Screen routes + NavHost + BottomBar
+│   ├── components/                      # Shared UI components
+│   ├── home/                            # HomeScreen + HomeViewModel
+│   ├── detail/                          # DetailScreen
+│   ├── reader/                          # ReaderScreen + ReaderViewModel
+│   ├── search/                          # SearchScreen
+│   ├── profile/                         # ProfileScreen + ProfileViewModel
+│   ├── history/                         # HistoryScreen + HistoryViewModel
+│   ├── favorites/                       # FavoritesScreen + FavoritesViewModel
+│   ├── settings/                        # SettingsScreen
+│   ├── auth/                            # LoginScreen (Google Sign-In)
+│   └── translator/                      # TranslatorDashboardScreen + ViewModel
+│
+└── util/                                # Legacy helpers (akan dimigrasi)
 ```
 
 ---
 
-## 🔒 Catatan Keamanan (Security Note)
+## 🔄 Changelog
 
-Demi menjaga keamanan kredensial dan API Key, file konfigurasi berikut **TIDAK DI-UPLOAD** ke repository umum:
-1.  `google-services.json`
-2.  `local.properties`
-3.  `key.properties`
-4.  `*.jks`
+### v2.0.0 — Clean Architecture Rewrite (Juni 2026)
+
+**Perubahan besar-besaran pada arsitektur dan teknologi:**
+
+- **Migrasi UI**: XML Layouts → **Jetpack Compose** + Material 3
+- **Migrasi DI**: Manual → **Hilt** (Dagger)
+- **Migrasi Image Loader**: Glide → **Coil 2.x**
+- **Clean Architecture**: Pisahnya kode menjadi 3 layer (Domain, Data, Presentation)
+- **Hybrid Data System**: Penggabungan Scraper API + Backend API (PostgreSQL) secara paralel
+- **AuthInterceptor**: JWT token otomatis di-inject ke semua request backend, penanganan 401 terpusat
+- **Dual OkHttp Client**: `scraperClient` (tanpa auth) dan `backendClient` (dengan auth)
+- **Bottom Navigation**: 4 tab (Home, Favorit, Riwayat, Profil) dengan state restoration
+- **Screen Baru**: ProfileScreen, HistoryScreen, FavoritesScreen, SettingsScreen, LoginScreen
+- **FavoriteRepository**: Sistem bookmark komik dengan Room DB
+- **Role System**: 3 aktor (Admin, Translator, User) dengan UI berbeda
+- **Translator Dashboard**: Bulk upload komik dengan paste 50+ URL
+- **Room DB v4**: Schema baru (users, favorites, downloads, history)
+
+### v1.1.0 — Bug Fix & UI Improvements (Januari 2026)
+
+- Fix crash SearchActivity (TextInputLayout style compatibility)
+- Fix crash Dark Mode toggle
+- Konsistensi theme MaterialComponents
+- Smart chapter navigation (Next/Prev conditional)
+
+### v1.0.0 — Initial Release
+
+- Aplikasi pembaca komik dengan XML Layout + MVVM
+- Login/Register lokal, Dashboard, Detail, Reader
+- Download offline, Favorites, History, Profile
+- Dark/Light mode support
 
 ---
 
-## 🚀 Cara Menjalankan Project
+## 🎨 Design Reference
 
-1.  **Clone Repository**:
-    ```bash
-    git clone https://github.com/MuhammadRizalNurfirdaus/Komikita.git
-    ```
-2.  **Buka di Android Studio**: Versi terbaru (Ladybug/Jellyfish).
-3.  **Sync Gradle**: Biarkan Android Studio mendownload dependency.
-4.  **Run App**: Tekan tombol **Run** (`Shift+F10`).
+- **Warna Utama**: `#FF6B35` (Brand Orange)
+- **Tema**: Material 3, auto dark/light mengikuti sistem (`isSystemInDarkTheme()`)
+- **Status Bar**: Dinamis (adaptasi Light/Dark mode)
+- **Navigasi**: Bottom Navigation Bar (tab) + Compose Navigation (push screens)
 
----
-
-## 📱 Instalasi APK
-
-Untuk menginstall langsung tanpa build:
-1. Download [Komikita.apk](releases/Komikita.apk)
-2. Enable "Install from Unknown Sources" di pengaturan Android
-3. Buka file APK dan install
-4. Enjoy reading! 📚
+🔗 **Figma Design**: [Komikita UI Design](https://www.figma.com/design/WhCaIxb9lESuLnuTMszFR8/Komikita?node-id=0-1&p=f&t=ZAtUXDHCXta4IAqz-0)
 
 ---
 
-*Dibuat dengan ❤️ untuk memenuhi tugas UAS pemrograman.*  
-*Terakhir diupdate: 25 Januari 2026*
+## 🔒 Keamanan
+
+- **PostgreSQL tidak pernah diakses langsung dari Android** — selalu melalui REST Backend API
+- **JWT Auth**: Token disimpan di Room DB, di-inject otomatis oleh AuthInterceptor
+- **Role Check**: Fitur Translator/Admin diverifikasi di client-side (UseCase) dan server-side (Backend)
+- File sensitif tidak di-upload ke repository: `google-services.json`, `local.properties`, `*.jks`
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Clone
+git clone https://github.com/MuhammadRizalNurfirdaus/Komikita.git
+
+# Buka di Android Studio (versi terbaru)
+# Sync Gradle → Run (Shift+F10)
+```
+
+**Requirements**:
+- Android Studio Ladybug atau lebih baru
+- JDK 17+
+- Min SDK 26 (Android 8.0)
+- Compile SDK 36
+
+---
+
+*Terakhir diupdate: Juni 2026*
