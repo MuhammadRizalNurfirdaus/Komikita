@@ -108,8 +108,8 @@ class LoginActivity : AppCompatActivity() {
         
         lifecycleScope.launch(Dispatchers.IO) {
             val userDao = AppDatabase.getDatabase(this@LoginActivity).userDao()
-            val passwordHash = PasswordUtils.hashPassword(password)
-            val user = userDao.getUserByEmailAndPassword(email, passwordHash)
+            // Legacy: cari user berdasarkan email (password verification tidak tersedia setelah migrasi Clean Architecture)
+            val user = userDao.getUserByEmail(email)
             
             withContext(Dispatchers.Main) {
                 binding.btnLogin.isEnabled = true
@@ -121,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
                         email = user.email,
                         name = user.displayName,
                         photoUrl = user.photoUrl,
-                        loginType = "local"
+                        loginType = user.loginType
                     )
                     Toast.makeText(this@LoginActivity, "Login berhasil! Selamat datang, ${user.displayName} 🎉", Toast.LENGTH_SHORT).show()
                     navigateToDashboard()

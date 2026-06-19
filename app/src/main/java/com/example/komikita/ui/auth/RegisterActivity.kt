@@ -181,14 +181,13 @@ class RegisterActivity : AppCompatActivity() {
                 return@launch
             }
             
-            // Create new user
+            // Create new user (passwordHash tidak lagi disimpan setelah migrasi Clean Architecture)
             val user = UserEntity(
                 userId = email,
                 email = email,
                 displayName = displayName,
                 photoUrl = photoUri?.toString(),
                 isEmailVerified = isGoogleSignUp, // True for Google, false for local
-                passwordHash = if (isGoogleSignUp) null else PasswordUtils.hashPassword(password),
                 loginType = if (isGoogleSignUp) "google" else "local"
             )
             

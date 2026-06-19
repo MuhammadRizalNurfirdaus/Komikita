@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".KomikitaApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,9 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Komikita">
         
-        <!-- Splash Screen as LAUNCHER -->
+        <!-- MainActivity (Compose Navigation Entry Point) -->
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Komikita.NoActionBar">
             <intent-filter>
@@ -26,6 +27,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- Splash Screen (Legacy - bisa dihapus setelah migrasi selesai) -->
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Komikita.NoActionBar" />
         
         <!-- Authentication Activities -->
         <activity
@@ -126,10 +133,7 @@
             android:exported="false"
             android:label="Google Sign-In Setup" />
         
-        <!-- Original MainActivity kept for compatibility -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+        <!-- Legacy Activities (dipertahankan untuk kompatibilitas selama migrasi) -->
     </application>
 
 </manifest>
