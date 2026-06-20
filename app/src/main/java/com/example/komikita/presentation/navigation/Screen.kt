@@ -7,6 +7,9 @@ package com.example.komikita.presentation.navigation
  * Setiap route bisa memiliki parameter (contoh: "detail/{slug}").
  */
 sealed class Screen(val route: String) {
+    // Splash screen (cek sesi)
+    object Splash : Screen("splash")
+
     // Autentikasi
     object Login : Screen("login")
 

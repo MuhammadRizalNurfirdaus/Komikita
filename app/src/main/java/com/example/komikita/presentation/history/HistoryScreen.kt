@@ -44,6 +44,7 @@ import javax.inject.Inject
 fun HistoryScreen(
     onBackClick: () -> Unit,
     onHistoryClick: (chapterId: String) -> Unit,
+    onLoginClick: (() -> Unit)? = null,
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,13 +67,21 @@ fun HistoryScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0)
     ) { padding ->
         when {
             state.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
+            }
+            // Guest mode: tampilkan pesan login
+            state.isGuest -> {
+                GuestHistoryContent(
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    onLoginClick = onLoginClick ?: {}
+                )
             }
             state.history.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
@@ -166,6 +175,46 @@ private fun HistoryItem(
     )
 }
 
+/**
+ * Konten kosong untuk guest: ajak login agar riwayat bisa tersimpan.
+ */
+@Composable
+private fun GuestHistoryContent(
+    modifier: Modifier = Modifier,
+    onLoginClick: () -> Unit
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                Icons.Default.DeleteSweep,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Riwayat Tidak Tersedia",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Login agar riwayat baca Anda tersimpan\ndan bisa dilanjutkan kapan saja.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 32.dp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = onLoginClick) {
+                Text("Login Sekarang")
+            }
+        }
+    }
+}
+
 // --- ViewModel ---
 
 @HiltViewModel
@@ -185,6 +234,12 @@ class HistoryViewModel @Inject constructor(
 
     private fun loadHistory() {
         viewModelScope.launch {
+            // Cek guest mode
+            if (userRepository.isGuestMode()) {
+                _state.value = HistoryState(isLoading = false, isGuest = true)
+                return@launch
+            }
+
             val user = userRepository.observeCurrentUser().first()
             if (user == null) {
                 _state.value = HistoryState(isLoading = false)
@@ -212,5 +267,6 @@ class HistoryViewModel @Inject constructor(
 
 data class HistoryState(
     val isLoading: Boolean = false,
-    val history: List<ReadHistory> = emptyList()
+    val history: List<ReadHistory> = emptyList(),
+    val isGuest: Boolean = false
 )

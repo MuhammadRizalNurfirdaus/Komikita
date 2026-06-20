@@ -7,7 +7,9 @@ import com.example.komikita.data.mapper.toDomainUser
 import com.example.komikita.data.model.AuthRequest
 import com.example.komikita.domain.model.User
 import com.example.komikita.domain.model.UserRole
+import android.content.Context
 import com.example.komikita.domain.repository.UserRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -26,8 +28,12 @@ import javax.inject.Singleton
 @Singleton
 class UserRepositoryImpl @Inject constructor(
     private val backendApi: BackendApi,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    @ApplicationContext private val context: Context
 ) : UserRepository {
+
+    /** SharedPreferences untuk menyimpan flag guest mode */
+    private val prefs = context.getSharedPreferences("komikita_session", Context.MODE_PRIVATE)
 
     override fun observeCurrentUser(): Flow<User?> {
         return userDao.getCurrentUser().map { entity ->
@@ -112,6 +118,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun logout() {
         userDao.deleteAllUsers()
+        setGuestMode(false) // Reset guest mode saat logout
     }
 
     override suspend fun isLoggedIn(): Boolean {
@@ -125,5 +132,22 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getAuthToken(): String? {
         return userDao.getCurrentUserSync()?.authToken
+    }
+
+    override fun isGuestMode(): Boolean {
+        return prefs.getBoolean("is_guest", false)
+    }
+
+    override fun setGuestMode(isGuest: Boolean) {
+        prefs.edit().putBoolean("is_guest", isGuest).apply()
+    }
+
+    /**
+     * Cek apakah user punya sesi aktif.
+     * Sesi aktif = sudah login (ada user di Room) ATAU masuk sebagai guest.
+     */
+    override fun hasActiveSession(): Boolean {
+        return prefs.getBoolean("is_guest", false) ||
+               kotlinx.coroutines.runBlocking { userDao.getCurrentUserSync() != null }
     }
 }

@@ -95,7 +95,8 @@ fun ReaderScreen(
                 )
             }
         },
-        modifier = Modifier.background(Color.Black)
+        modifier = Modifier.background(Color.Black),
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         Box(
             modifier = Modifier

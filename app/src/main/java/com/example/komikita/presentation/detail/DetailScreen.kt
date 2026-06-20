@@ -50,7 +50,8 @@ fun DetailScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         when {
             state.isLoading -> {

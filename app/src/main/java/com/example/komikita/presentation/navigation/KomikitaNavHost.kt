@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,24 +19,27 @@ import com.example.komikita.presentation.home.HomeScreen
 import com.example.komikita.presentation.reader.ReaderScreen
 import com.example.komikita.presentation.search.SearchScreen
 import com.example.komikita.presentation.settings.SettingsScreen
+import com.example.komikita.presentation.splash.SplashScreen
 import com.example.komikita.presentation.translator.TranslatorDashboardScreen
 
 /**
  * NavHost utama aplikasi KOMIKITA.
  *
- * Struktur navigasi:
- * - Bottom Bar: Home, Favorit, Riwayat, Profil (4 tab utama)
- * - Push screens: Detail, Reader, Search, Login, Settings, Translator Dashboard
+ * Alur navigasi sesi:
+ * 1. Splash Screen → Cek sesi (logged in / guest / belum masuk)
+ * 2. Jika sudah punya sesi → Home (tab utama)
+ * 3. Jika belum → Login Screen (Google Sign-In / Guest Mode)
  *
- * @param startRoute Rute awal (default: Home)
+ * Bottom Bar: Home, Favorit, Riwayat, Profil (4 tab utama)
+ * Push screens: Detail, Reader, Search, Settings, Translator Dashboard
  */
 @Composable
-fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
+fun KomikitaNavHost() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    // Bottom bar hanya muncul di 4 tab utama
+    // Bottom bar hanya muncul di 4 tab utama (BUKAN splash/login)
     val bottomBarRoutes = listOf(
         Screen.Home.route,
         Screen.Favorites.route,
@@ -55,7 +57,6 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
                     onTabSelected = { index ->
                         val route = bottomBarRoutes[index]
                         if (route != currentRoute) {
-                            // Navigasi ke tab tanpa menambah back stack
                             navController.navigate(route) {
                                 popUpTo(Screen.Home.route) { saveState = true }
                                 launchSingleTop = true
@@ -69,10 +70,50 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = startRoute,
+            startDestination = Screen.Splash.route,
             modifier = Modifier.padding(padding)
         ) {
-            // === TAB: HOME ===
+            // ═══════════════════════════════════════
+            // SPLASH SCREEN - Cek sesi user
+            // ═══════════════════════════════════════
+            composable(Screen.Splash.route) {
+                SplashScreen(
+                    onNavigateToHome = {
+                        // User sudah punya sesi (login/guest) → langsung Home
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToLogin = {
+                        // Belum ada sesi → Login Screen
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            // ═══════════════════════════════════════
+            // LOGIN SCREEN - Google Sign-In / Guest
+            // ═══════════════════════════════════════
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onGuestLogin = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            // ═══════════════════════════════════════
+            // TAB: HOME - Feed komik hybrid
+            // ═══════════════════════════════════════
             composable(Screen.Home.route) {
                 HomeScreen(
                     onKomikClick = { slug ->
@@ -84,27 +125,43 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
                 )
             }
 
-            // === TAB: FAVORIT ===
+            // ═══════════════════════════════════════
+            // TAB: FAVORIT - Bookmark komik
+            // ═══════════════════════════════════════
             composable(Screen.Favorites.route) {
                 FavoritesScreen(
                     onBackClick = { navController.popBackStack() },
                     onKomikClick = { slug ->
                         navController.navigate(Screen.Detail.createRoute(slug))
+                    },
+                    onLoginClick = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 )
             }
 
-            // === TAB: RIWAYAT ===
+            // ═══════════════════════════════════════
+            // TAB: RIWAYAT - History baca
+            // ═══════════════════════════════════════
             composable(Screen.History.route) {
                 HistoryScreen(
                     onBackClick = { navController.popBackStack() },
                     onHistoryClick = { chapterId ->
                         navController.navigate(Screen.Reader.createRoute(chapterId))
+                    },
+                    onLoginClick = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
                 )
             }
 
-            // === TAB: PROFIL ===
+            // ═══════════════════════════════════════
+            // TAB: PROFIL - Info user / Guest state
+            // ═══════════════════════════════════════
             composable(Screen.Profile.route) {
                 ProfileScreen(
                     onTranslatorDashboardClick = {
@@ -128,15 +185,22 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
                         }
                     },
                     onLogout = {
-                        // Kembali ke home setelah logout
-                        navController.navigate(Screen.Home.route) {
+                        // Kembali ke splash setelah logout (cek ulang sesi)
+                        navController.navigate(Screen.Splash.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onLoginClick = {
+                        navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
                         }
                     }
                 )
             }
 
-            // === PUSH: DETAIL ===
+            // ═══════════════════════════════════════
+            // PUSH: DETAIL KOMIK
+            // ═══════════════════════════════════════
             composable(
                 route = Screen.Detail.route,
                 arguments = listOf(navArgument("slug") { type = NavType.StringType })
@@ -151,7 +215,9 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
                 )
             }
 
-            // === PUSH: READER ===
+            // ═══════════════════════════════════════
+            // PUSH: READER - Baca chapter
+            // ═══════════════════════════════════════
             composable(
                 route = Screen.Reader.route,
                 arguments = listOf(navArgument("chapterId") { type = NavType.StringType })
@@ -163,7 +229,9 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
                 )
             }
 
-            // === PUSH: SEARCH ===
+            // ═══════════════════════════════════════
+            // PUSH: SEARCH - Pencarian
+            // ═══════════════════════════════════════
             composable(Screen.Search.route) {
                 SearchScreen(
                     onKomikClick = { slug ->
@@ -173,26 +241,18 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
                 )
             }
 
-            // === PUSH: LOGIN ===
-            composable(Screen.Login.route) {
-                LoginScreen(
-                    onBackClick = { navController.popBackStack() },
-                    onLoginSuccess = {
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                )
-            }
-
-            // === PUSH: SETTINGS ===
+            // ═══════════════════════════════════════
+            // PUSH: SETTINGS
+            // ═══════════════════════════════════════
             composable(Screen.Settings.route) {
                 SettingsScreen(
                     onBackClick = { navController.popBackStack() }
                 )
             }
 
-            // === PUSH: TRANSLATOR DASHBOARD ===
+            // ═══════════════════════════════════════
+            // PUSH: TRANSLATOR DASHBOARD
+            // ═══════════════════════════════════════
             composable(Screen.TranslatorDashboard.route) {
                 TranslatorDashboardScreen(
                     onBackClick = { navController.popBackStack() }
@@ -203,8 +263,8 @@ fun KomikitaNavHost(startRoute: String = Screen.Home.route) {
 }
 
 /**
- * ProfileScreen wrapper - perlu import karena didefinisikan di file ProfileScreen.kt
- * dengan fungsi composable top-level.
+ * ProfileScreen wrapper.
+ * Menyambungkan ProfileScreen dari presentation/profile/ ke NavHost.
  */
 @Composable
 private fun ProfileScreen(
@@ -212,13 +272,15 @@ private fun ProfileScreen(
     onSettingsClick: () -> Unit,
     onFavoritesClick: () -> Unit,
     onHistoryClick: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onLoginClick: () -> Unit
 ) {
     com.example.komikita.presentation.profile.ProfileScreen(
         onTranslatorDashboardClick = onTranslatorDashboardClick,
         onSettingsClick = onSettingsClick,
         onFavoritesClick = onFavoritesClick,
         onHistoryClick = onHistoryClick,
-        onLogout = onLogout
+        onLogout = onLogout,
+        onLoginClick = onLoginClick
     )
 }

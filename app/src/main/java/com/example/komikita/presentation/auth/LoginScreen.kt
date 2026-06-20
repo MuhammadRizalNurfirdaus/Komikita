@@ -1,8 +1,6 @@
 package com.example.komikita.presentation.auth
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,42 +22,33 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Login Screen - Halaman masuk dengan Google Sign-In.
+ * Login Screen - Halaman masuk dengan Google Sign-In + Guest Mode.
  *
- * Flow autentikasi:
- * 1. User tap "Masuk dengan Google"
- * 2. Google Sign-In dialog muncul (Firebase Auth)
- * 3. Setelah berhasil → Firebase memberikan ID Token
- * 4. Token dikirim ke backend → backend verifikasi → JWT
- * 5. JWT disimpan di Room DB → user masuk ke Home
+ * Opsi masuk:
+ * 1. "Masuk dengan Google" → Google Sign-In via Firebase Auth
+ * 2. "Masuk sebagai Tamu" → Langsung masuk tanpa akun (fitur terbatas)
  *
- * Catatan: Integrasi Firebase Auth + Google Sign-In memerlukan konfigurasi
- * google-services.json di Firebase Console. UI ini siap dipakai,
- * tinggal hubungkan Firebase Auth SDK di MainActivity.
+ * Batasan Guest Mode:
+ * - Bisa: Browse, Search, Baca komik
+ * - Tidak bisa: Favorit, Download, Riwayat tersimpan
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onBackClick: () -> Unit,
     onLoginSuccess: () -> Unit,
+    onGuestLogin: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Masuk") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
-                    }
-                }
-            )
-        }
+        contentWindowInsets = WindowInsets(0)
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -110,6 +99,31 @@ fun LoginScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // === TOMBOL GUEST MODE ===
+            OutlinedButton(
+                onClick = { viewModel.enterAsGuest(onGuestLogin) },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                enabled = !state.isLoading,
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    "Masuk sebagai Tamu",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                "Tamu bisa menjelajah & membaca komik,\ntapi tidak bisa menyimpan favorit atau riwayat.",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            )
+
             // === ERROR MESSAGE ===
             if (state.errorMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -152,19 +166,12 @@ class LoginViewModel @Inject constructor(
 
     /**
      * Trigger Google Sign-In flow.
-     *
-     * Implementasi sebenarnya memerlukan Activity result launcher
-     * untuk Google Sign-In intent. ViewModel ini memanggil UserRepository
-     * setelah mendapat Firebase ID Token dari Google.
-     *
-     * TODO: Hubungkan dengan Google Sign-In SDK di Activity/Fragment level.
-     * Setelah Google berhasil, panggil handleGoogleSignInResult() di bawah.
+     * TODO: Hubungkan dengan Google Sign-In SDK di Activity level.
      */
     fun signInWithGoogle(onSuccess: () -> Unit) {
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
 
-        // Placeholder: Di implementasi nyata, ini akan dipanggil setelah Google Sign-In berhasil.
-        // Untuk sekarang, tampilkan pesan bahwa Firebase Auth perlu dikonfigurasi.
+        // Placeholder: Firebase Auth perlu dikonfigurasi
         _state.value = _state.value.copy(
             isLoading = false,
             errorMessage = "Google Sign-In memerlukan konfigurasi Firebase Auth. " +
@@ -173,8 +180,21 @@ class LoginViewModel @Inject constructor(
     }
 
     /**
+     * Masuk sebagai tamu (Guest Mode).
+     * Tidak memerlukan akun, tapi fitur terbatas.
+     * Flag guest disimpan di SharedPreferences.
+     */
+    fun enterAsGuest(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+            userRepository.setGuestMode(true)
+            _state.value = _state.value.copy(isLoading = false)
+            onSuccess()
+        }
+    }
+
+    /**
      * Dipanggil dari Activity setelah Google Sign-In berhasil.
-     * Menerima Firebase ID Token untuk dikirim ke backend.
      */
     fun handleGoogleSignInResult(
         firebaseUid: String,
@@ -186,6 +206,9 @@ class LoginViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+
+            // Reset guest mode jika sebelumnya guest, sekarang login
+            userRepository.setGuestMode(false)
 
             userRepository.syncUserToBackend(
                 firebaseUid = firebaseUid,

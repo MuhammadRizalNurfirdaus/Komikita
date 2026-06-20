@@ -45,7 +45,8 @@ fun TranslatorDashboardScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         // Jika berhasil submit, tampilkan success screen
         if (state.isSuccess) {

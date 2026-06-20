@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import javax.inject.Inject
 fun FavoritesScreen(
     onBackClick: () -> Unit,
     onKomikClick: (slug: String) -> Unit,
+    onLoginClick: (() -> Unit)? = null,
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -53,12 +55,43 @@ fun FavoritesScreen(
                     }
                 }
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0)
     ) { padding ->
         when {
             state.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
+                }
+            }
+            // Guest mode: tampilkan pesan login
+            state.isGuest -> {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            Icons.Default.Favorite,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Favorit Tidak Tersedia", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Login untuk menyimpan komik favorit Anda\ndan sinkronkan ke semua perangkat.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 32.dp),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Button(onClick = { onLoginClick?.invoke() }) {
+                            Text("Login Sekarang")
+                        }
+                    }
                 }
             }
             state.favorites.isEmpty() -> {
@@ -150,6 +183,12 @@ class FavoritesViewModel @Inject constructor(
 
     private fun loadFavorites() {
         viewModelScope.launch {
+            // Cek guest mode
+            if (userRepository.isGuestMode()) {
+                _state.value = FavoritesState(isLoading = false, isGuest = true)
+                return@launch
+            }
+
             val user = userRepository.observeCurrentUser().first()
             if (user == null) {
                 _state.value = FavoritesState(isLoading = false)
@@ -164,5 +203,6 @@ class FavoritesViewModel @Inject constructor(
 
 data class FavoritesState(
     val isLoading: Boolean = false,
-    val favorites: List<FavoriteItem> = emptyList()
+    val favorites: List<FavoriteItem> = emptyList(),
+    val isGuest: Boolean = false
 )

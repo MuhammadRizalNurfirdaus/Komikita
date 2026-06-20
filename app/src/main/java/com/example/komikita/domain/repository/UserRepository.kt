@@ -39,4 +39,13 @@ interface UserRepository {
 
     /** Ambil token JWT yang tersimpan */
     suspend fun getAuthToken(): String?
+
+    /** Cek apakah user masuk sebagai tamu (Guest Mode) */
+    fun isGuestMode(): Boolean
+
+    /** Set mode tamu (disimpan di SharedPreferences) */
+    fun setGuestMode(isGuest: Boolean)
+
+    /** Cek apakah sesi user masih aktif (logged in ATAU guest) */
+    fun hasActiveSession(): Boolean
 }
