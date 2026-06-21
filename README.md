@@ -1,5 +1,7 @@
 # Komikita - Aplikasi Baca Komik Modern
 
+> **Status: Dalam Pengembangan Aktif** — Aplikasi ini masih dalam tahap pengembangan dan belum dirilis secara resmi.
+
 **Developer**: Muhammad Rizal Nurfirdaus
 
 **Komikita** adalah aplikasi Android native untuk membaca komik digital (Manga, Manhwa, Manhua) yang dibangun dengan arsitektur modern **Clean Architecture + Jetpack Compose + Hilt**. Aplikasi ini menggunakan sistem data hybrid yang menggabungkan **Scraper API** (konten publik read-only) dan **PostgreSQL** melalui REST Backend API (komik custom dari Translator), dengan **Firebase** khusus untuk autentikasi Google Sign-In.
@@ -79,8 +81,14 @@ Aplikasi menggunakan 2 `OkHttpClient` terpisah untuk isolasi keamanan:
 
 ## ✨ Fitur Utama
 
-### Autentikasi
+### Autentikasi & Sesi
+- **Splash Screen** — pengecekan sesi asinkron saat app launch
+  - Sesi aktif (login/guest) → langsung ke Home
+  - Belum ada sesi → Login Screen
 - **Google Sign-In** via Firebase Auth — tanpa password lokal
+- **Guest Mode** — masuk tanpa akun dengan batasan:
+  - ✅ Bisa: Browse, Search, Baca komik
+  - ❌ Tidak bisa: Favorit, Riwayat, Download (ditampilkan prompt login)
 - **JWT Token** dari backend disimpan di Room DB
 - **AuthInterceptor** otomatis inject `Authorization: Bearer <token>` ke semua request backend
 - **Penanganan 401** terpusat — token otomatis dihapus jika expired
@@ -103,11 +111,19 @@ Aplikasi menggunakan 2 `OkHttpClient` terpisah untuk isolasi keamanan:
 - Kelola komik custom (tambah chapter, hapus)
 - Hide/unhide komik scraper yang tidak sesuai
 
-### Profil & Pengaturan
+### Tema & Pengaturan
+- **Mode Tema 3-Opsi**: Ikuti Sistem / Mode Terang / Mode Gelap
+- Perubahan tema global — status bar, navigation bar, dan seluruh UI berubah bersamaan
+- Preferensi tersimpan di SharedPreferences, bertahan setelah app restart
+- `ThemeManager` (Hilt Singleton) + `AppCompatDelegate.setDefaultNightMode()`
+- Hapus cache aplikasi
+
+### Profil
 - Foto profil, nama, email dari Google
 - Role badge berwarna (Admin=Merah, Translator=Oranye, User=Biru)
 - Menu akses cepat ke Favorit, Riwayat, Pengaturan
 - Tombol Translator Dashboard (muncul hanya untuk Translator/Admin)
+- **Guest state**: Banner "Mode Tamu" + daftar fitur tersedia/terkunci + tombol login
 
 ### Favorit & Riwayat
 - Bookmark komik ke favorit (disimpan lokal di Room)
@@ -156,8 +172,9 @@ app/src/main/java/com/example/komikita/
 │   ├── profile/                         # ProfileScreen + ProfileViewModel
 │   ├── history/                         # HistoryScreen + HistoryViewModel
 │   ├── favorites/                       # FavoritesScreen + FavoritesViewModel
-│   ├── settings/                        # SettingsScreen
-│   ├── auth/                            # LoginScreen (Google Sign-In)
+│   ├── settings/                        # SettingsScreen + ThemeManager integration
+│   ├── splash/                          # SplashScreen + SplashViewModel (session check)
+│   ├── auth/                            # LoginScreen (Google Sign-In + Guest Mode)
 │   └── translator/                      # TranslatorDashboardScreen + ViewModel
 │
 └── util/                                # Legacy helpers (akan dimigrasi)
@@ -166,6 +183,19 @@ app/src/main/java/com/example/komikita/
 ---
 
 ## 🔄 Changelog
+
+### v2.1.0 — Session Flow, Guest Mode & Theme System (Juni 2026) `[Dalam Pengembangan]`
+
+**Sistem sesi dan manajemen tema:**
+
+- **Splash Screen**: Pengecekan sesi asinkron saat app launch → redirect otomatis ke Home atau Login
+- **SessionState**: Sealed class (`LoggedIn`, `Guest`, `NotLoggedIn`, `Loading`) untuk manajemen state sesi
+- **Guest Mode**: Masuk tanpa akun Google — bisa browse & baca, tapi fitur favorit/riwayat/download terkunci dengan prompt login
+- **Login Screen**: 2 tombol — "Masuk dengan Google" (Firebase Auth) + "Masuk sebagai Tamu" (Guest Mode)
+- **ThemeManager**: Singleton Hilt dengan 3 mode tema (Ikuti Sistem / Mode Terang / Mode Gelap)
+- **AppCompatDelegate**: Sinkronisasi tema global — status bar, navigation bar, dan Compose UI berubah bersamaan
+- **Guest-aware screens**: ProfileScreen, HistoryScreen, FavoritesScreen menampilkan state berbeda untuk guest
+- **Persistent session**: SharedPreferences menyimpan flag guest mode dan preferensi tema
 
 ### v2.0.0 — Clean Architecture Rewrite (Juni 2026)
 
@@ -204,7 +234,7 @@ app/src/main/java/com/example/komikita/
 ## 🎨 Design Reference
 
 - **Warna Utama**: `#FF6B35` (Brand Orange)
-- **Tema**: Material 3, auto dark/light mengikuti sistem (`isSystemInDarkTheme()`)
+- **Tema**: Material 3, 3-mode (Ikuti Sistem / Mode Terang / Mode Gelap) via `ThemeManager` + `AppCompatDelegate`
 - **Status Bar**: Dinamis (adaptasi Light/Dark mode)
 - **Navigasi**: Bottom Navigation Bar (tab) + Compose Navigation (push screens)
 
@@ -239,4 +269,4 @@ git clone https://github.com/MuhammadRizalNurfirdaus/Komikita.git
 
 ---
 
-*Terakhir diupdate: Juni 2026*
+*Terakhir diupdate: Juni 2026 — Dalam tahap pengembangan aktif*

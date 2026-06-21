@@ -4,7 +4,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * Skema warna Light Mode (Material 3).
@@ -56,16 +63,32 @@ private val DarkColorScheme = darkColorScheme(
 
 /**
  * Tema KOMIKITA menggunakan Material 3.
- * Otomatis mengikuti Dark/Light mode dari pengaturan OS HP.
  *
- * @param darkTheme Otomatis detect dari sistem (isSystemInDarkTheme)
+ * Alur Dark/Light:
+ * 1. Baca preferensi user dari ThemeManager (SharedPreferences)
+ * 2. Mode bisa: SYSTEM (ikuti OS), LIGHT (paksa terang), DARK (paksa gelap)
+ * 3. Saat user ubah mode di Settings → AppCompatDelegate diterapkan →
+ *    seluruh UI (status bar, navigation bar, Compose) ikut berubah
+ *
+ * @param themeManager Singleton yang mengelola preferensi tema
  */
 @Composable
 fun KomikitaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeManager: ThemeManager,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    // Observasi perubahan mode tema secara real-time
+    val currentMode by themeManager.themeMode.collectAsState()
+    val systemDark = isSystemInDarkTheme()
+
+    // Tentukan apakah harus menggunakan dark mode
+    val isDark = when (currentMode) {
+        ThemeMode.SYSTEM -> systemDark  // Ikuti pengaturan OS
+        ThemeMode.LIGHT -> false         // Paksa mode terang
+        ThemeMode.DARK -> true           // Paksa mode gelap
+    }
+
+    val colorScheme = if (isDark) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

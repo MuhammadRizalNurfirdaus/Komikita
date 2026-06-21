@@ -9,26 +9,34 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.komikita.presentation.navigation.KomikitaNavHost
 import com.example.komikita.presentation.theme.KomikitaTheme
+import com.example.komikita.presentation.theme.ThemeManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * MainActivity - Entry point utama aplikasi KOMIKITA versi Compose.
  *
- * Menggunakan:
- * - @AndroidEntryPoint: Hilt inject dependencies ke Activity ini
- * - setContent: Mengatur Compose sebagai UI framework
- * - KomikitaTheme: Tema Material 3 (auto dark/light)
- * - KomikitaNavHost: Navigasi antar screen
+ * Alur tema:
+ * 1. ThemeManager di-inject oleh Hilt (singleton)
+ * 2. Saat onCreate, terapkan preferensi tema ke AppCompatDelegate
+ *    (agar status bar, nav bar, dan seluruh UI ikut berubah)
+ * 3. KomikitaTheme membaca StateFlow dari ThemeManager
+ * 4. Saat user ubah mode di Settings → otomatis recompose seluruh UI
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    /** ThemeManager singleton yang mengelola preferensi Dark/Light/System */
+    @Inject lateinit var themeManager: ThemeManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Terapkan tema SEBELUM super.onCreate agar tidak ada flash
+        themeManager.applyToSystem(themeManager.themeMode.value)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            KomikitaTheme {
+            KomikitaTheme(themeManager = themeManager) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     KomikitaNavHost()
                 }
