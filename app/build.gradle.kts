@@ -11,11 +11,11 @@ import java.util.Properties
 import java.io.FileInputStream
 
 android {
-    namespace = "com.example.komikita"
+    namespace = "com.komikita.app"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.komikita"
+        applicationId = "com.komikita.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 2
@@ -117,12 +117,13 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
-    // === NETWORKING (Retrofit2 + OkHttp) ===
+    // === NETWORKING (Retrofit2 + OkHttp + Jsoup) ===
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+    implementation(libs.jsoup)
 
     // === COROUTINES ===
     implementation(libs.coroutines.core)
@@ -140,8 +141,17 @@ dependencies {
     // === DATASTORE (Preferensi User Modern) ===
     implementation(libs.datastore.preferences)
 
-    // === GOOGLE SIGN-IN (Hanya untuk Firebase Auth) ===
+    // === WORKMANAGER (Background Download Chapter Offline) ===
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.work.compiler)
+
+    // === GOOGLE SIGN-IN & FIREBASE AUTH ===
     implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // === TESTING ===
     testImplementation(libs.junit)

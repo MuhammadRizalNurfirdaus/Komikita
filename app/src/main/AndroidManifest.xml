@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Komikita">
         
-        <!-- MainActivity (Compose Navigation Entry Point) -->
+        <!-- MainActivity (Single-Activity Compose Navigation Entry Point) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -28,112 +27,6 @@
             </intent-filter>
         </activity>
         
-        <!-- Splash Screen (Legacy - bisa dihapus setelah migrasi selesai) -->
-        <activity
-            android:name=".ui.splash.SplashActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Komikita.NoActionBar" />
-        
-        <!-- Authentication Activities -->
-        <activity
-            android:name=".ui.auth.LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Komikita.NoActionBar" />
-        
-        <activity
-            android:name=".ui.auth.RegisterActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Komikita.NoActionBar" />
-        
-        <!-- Main Dashboard -->
-        <activity
-            android:name=".ui.dashboard.DashboardActivity"
-            android:exported="false" />
-        
-        <!-- Comic List Activities -->
-        <activity
-            android:name=".ui.manga.MangaListActivity"
-            android:exported="false"
-            android:label="Manga" />
-        
-        <activity
-            android:name=".ui.manhwa.ManhwaListActivity"
-            android:exported="false"
-            android:label="Manhwa" />
-        
-        <activity
-            android:name=".ui.manhua.ManhuaListActivity"
-            android:exported="false"
-            android:label="Manhua" />
-        
-        <!-- Search Activity -->
-        <activity
-            android:name=".ui.search.SearchActivity"
-            android:exported="false"
-            android:label="Search"
-            android:launchMode="singleTop" />
-        
-        <!-- Detail and Reader -->
-        <activity
-            android:name=".ui.detail.KomikDetailActivity"
-            android:exported="false"
-            android:label="Comic Detail" />
-        
-        <activity
-            android:name=".ui.reader.ChapterReaderActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Komikita.NoActionBar"
-            android:label="Read Chapter" />
-        
-        <!-- User Features -->
-        <activity
-            android:name=".ui.favorites.FavoritesActivity"
-            android:exported="false"
-            android:label="Favorites" />
-        
-        <activity
-            android:name=".ui.downloads.DownloadsActivity"
-            android:exported="false"
-            android:label="Downloads" />
-        
-        <activity
-            android:name=".ui.downloads.DownloadChaptersActivity"
-            android:exported="false"
-            android:label="Chapters" />
-        
-        <activity
-            android:name=".ui.profile.ProfileActivity"
-            android:exported="false"
-            android:label="Profile" />
-
-        <activity
-            android:name=".ui.profile.EditProfileActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Komikita.NoActionBar" />
-        
-        <!-- Additional Activities -->
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:exported="false"
-            android:label="Settings" />
-        
-        <activity
-            android:name=".ui.genres.GenresActivity"
-            android:exported="false"
-            android:label="Browse by Genre" />
-        
-        <activity
-            android:name=".ui.history.HistoryActivity"
-            android:exported="false"
-            android:label="Reading History" />
-        
-        <!-- Debug/Setup Activities -->
-        <activity
-            android:name=".ui.debug.SetupInfoActivity"
-            android:exported="false"
-            android:label="Google Sign-In Setup" />
-        
-        <!-- Legacy Activities (dipertahankan untuk kompatibilitas selama migrasi) -->
     </application>
 
 </manifest>

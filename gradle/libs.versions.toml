@@ -24,10 +24,14 @@ lifecycle = "2.8.7"
 # Room
 room = "2.6.1"
 ksp = "2.0.21-1.0.25"
+jsoup = "1.18.1"
 
-# Google Services & Auth
+# Google Sign-In & Firebase Auth
 googleServices = "4.4.0"
 playServicesAuth = "21.2.0"
+firebaseAuth = "23.1.0"
+credentials = "1.3.0"
+googleid = "1.1.1"
 
 # Jetpack Compose BOM
 composeBom = "2024.12.01"
@@ -44,6 +48,10 @@ coil = "2.7.0"
 
 # DataStore (untuk preferensi user modern)
 datastore = "1.1.1"
+
+# WorkManager & Hilt Work
+work = "2.9.1"
+hiltWork = "1.2.0"
 
 # Legacy (akan dihapus bertahap)
 recyclerview = "1.3.2"
@@ -105,12 +113,22 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 # DataStore (pengganti SharedPreferences)
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
+# WorkManager & Hilt Work
+work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+hilt-work-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
+
 # Google Sign-In (hanya untuk autentikasi Firebase)
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuth" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
 # Legacy - dipertahankan sementara untuk kompatibilitas
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
